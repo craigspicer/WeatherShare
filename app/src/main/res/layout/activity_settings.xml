@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/save_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
+
+            <TextView
+                android:id="@+id/homeLocationDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="Set your home location"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/home_location"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/homeLocationSetting" />
+
+            <TextView
+                android:id="@+id/favouriteLocationsDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Set your favourite locations"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favouriteLocationsSetting" />
+
+            <TextView
+                android:id="@+id/fingerprintTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="16dp"
+                android:text="Metric/Imperial"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/unitsSelector"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/settingsHeading" />
+
+            <TextView
+                android:id="@+id/homeLocationSetting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="16dp"
+                android:text="Home Location"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/home_location"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fingerprintDescription" />
+
+            <TextView
+                android:id="@+id/favouriteLocationsSetting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="40dp"
+                android:text="Favourite Locations"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/homeLocationDescription" />
+
+            <TextView
+                android:id="@+id/fingerprintDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="Select metric or imperial units"
+                android:textColor="@color/colorLight"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/unitsSelector"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fingerprintTextView" />
+
+            <TextView
+                android:id="@+id/settingsHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="Settings"
+                android:textColor="@color/colorLight"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/settingsHeading"
+                app:layout_constraintEnd_toStartOf="@+id/settingsHeading"
+                app:layout_constraintTop_toTopOf="@+id/settingsHeading"
+                app:srcCompat="@drawable/ic_settings" />
+
+            <ToggleButton
+                android:id="@+id/unitsSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorLight"
+                android:text="Units"
+                android:textColor="@color/colorAccent"
+                android:textOff="Metric"
+                android:textOn="Imperial"
+                app:layout_constraintBottom_toBottomOf="@+id/fingerprintDescription"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/fingerprintTextView" />
+
+            <EditText
+                android:id="@+id/home_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:ems="10"
+                android:hint="eg. New York, US"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintBottom_toBottomOf="@+id/homeLocationDescription"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/homeLocationSetting" />
+
+            <EditText
+                android:id="@+id/favourite_location_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="Los Angeles, US"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favouriteLocationsDescription" />
+
+            <EditText
+                android:id="@+id/favourite_location_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Sydney, AU"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_1" />
+
+            <EditText
+                android:id="@+id/favourite_location_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Auckland, NZ"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_2" />
+
+            <EditText
+                android:id="@+id/favourite_location_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="London, GB"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_3" />
+
+            <EditText
+                android:id="@+id/favourite_location_5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Cape Town, ZA"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_4" />
+
+            <EditText
+                android:id="@+id/favourite_location_6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Rome, IT"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_5" />
+
+            <EditText
+                android:id="@+id/favourite_location_7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Tokyo, JP"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_6" />
+
+            <EditText
+                android:id="@+id/favourite_location_8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Paris, FR"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_7" />
+
+            <EditText
+                android:id="@+id/favourite_location_9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Prague, CZ"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_8" />
+
+            <EditText
+                android:id="@+id/favourite_location_10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="Stockholm, SE"
+                android:padding="16dp"
+                android:textColor="@color/colorLight"
+                android:textColorHint="@color/colorLight"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorLight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_9" />
+
+            <TextView
+                android:id="@+id/dummy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/favourite_location_10" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/save_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@color/colorLight" />
+
+    <TextView
+        android:id="@+id/save_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAVE"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/save_button"
+        app:layout_constraintEnd_toEndOf="@+id/save_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/save_button" />
+
+</android.support.constraint.ConstraintLayout>

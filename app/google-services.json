@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "689011586455",
+    "firebase_url": "https://weathershare-b1a5d.firebaseio.com",
+    "project_id": "weathershare-b1a5d",
+    "storage_bucket": "weathershare-b1a5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689011586455:android:eb05321548a3142f",
+        "android_client_info": {
+          "package_name": "com.interstellarstudios.weathershare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689011586455-o6lq56pla1gb54jriksjjvsuctc0fne2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.interstellarstudios.weathershare",
+            "certificate_hash": "0eb56b1699876cd9391cf8d0c16a1dcac5b8a67a"
+          }
+        },
+        {
+          "client_id": "689011586455-g1uhd1rvi7e722s2rjs0p84nqegh63ih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgcmteMnjTsPfeh8jzOMgfoMbGm4UNzXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689011586455-g1uhd1rvi7e722s2rjs0p84nqegh63ih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

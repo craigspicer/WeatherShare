@@ -159,6 +159,8 @@ public class Settings extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent i = new Intent(Settings.this, Home.class);
+        startActivity(i);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 }

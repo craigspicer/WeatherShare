@@ -435,7 +435,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         layout.setBackgroundResource(R.mipmap.mist);
                     } else if (weatherIdInt >= 751 && weatherIdInt <= 761) {
                         layout.setBackgroundResource(R.mipmap.sand);
-                    } else if (weatherIdInt == 800) {
+                    } else if (weatherIdInt >= 762 && weatherIdInt <= 781) {
+                        layout.setBackgroundResource(R.mipmap.mist);
+                    }else if (weatherIdInt == 800) {
                         layout.setBackgroundResource(R.mipmap.clear);
                     } else if (weatherIdInt >= 801 && weatherIdInt <= 803) {
                         layout.setBackgroundResource(R.mipmap.clouds);

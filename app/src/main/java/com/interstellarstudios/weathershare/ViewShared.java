@@ -1,13 +1,10 @@
 package com.interstellarstudios.weathershare;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.annotation.NonNull;
-import android.view.MenuItem;
 import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -45,28 +42,6 @@ public class ViewShared extends AppCompatActivity {
     private String mLocation;
     private String mCurrentUserId;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    Intent i = new Intent(ViewShared.this, Home.class);
-                    startActivity(i);
-                    return true;
-                case R.id.navigation_forecast:
-                    Intent j = new Intent(ViewShared.this, ForecastTimes.class);
-                    startActivity(j);
-                    return true;
-                case R.id.navigation_account:
-                    Intent k = new Intent(ViewShared.this, Account.class);
-                    startActivity(k);
-                    return true;
-            }
-            return false;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,12 +54,8 @@ public class ViewShared extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        //Loading shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         mSwitchOnOff = sharedPreferences.getBoolean("switchUnits", false);
-
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         mTemperatureText = findViewById(R.id.temperatureText);
         mLocationText = findViewById(R.id.locationText);

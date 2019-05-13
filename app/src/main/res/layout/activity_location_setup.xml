@@ -14,7 +14,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="New York, US"
+        android:hint="eg. New York, US"
         android:padding="16dp"
         android:textColor="@color/colorLight"
         android:textColorHint="@color/colorLight"

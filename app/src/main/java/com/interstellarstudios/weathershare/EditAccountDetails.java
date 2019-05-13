@@ -62,15 +62,14 @@ public class EditAccountDetails extends AppCompatActivity {
             DocumentReference userDetailsPath = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("User_Details").document("This_User");
             userDetailsPath.set(new UserNamesModel(userFirstName, userLastName));
 
+            Intent i = new Intent(EditAccountDetails.this, Account.class);
+            startActivity(i);
+            overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+
             Toast.makeText(EditAccountDetails.this, "Details Saved", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(EditAccountDetails.this, "Please enter your first and last names", Toast.LENGTH_LONG).show();
         }
-
-        Intent i = new Intent(EditAccountDetails.this, Account.class);
-        startActivity(i);
-
-        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 
     @Override

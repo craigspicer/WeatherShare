@@ -126,7 +126,7 @@ public class Register extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
                             String date = sdf.format(calendar.getTime());
 
                             if (mFireBaseAuth.getCurrentUser() != null) {

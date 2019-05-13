@@ -1,11 +1,10 @@
 package com.interstellarstudios.weathershare;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.annotation.NonNull;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,24 +26,6 @@ public class Account extends AppCompatActivity {
     private FirebaseFirestore mFireBaseFireStore;
     private String mCurrentUserId;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    Intent i = new Intent(Account.this, Home.class);
-                    startActivity(i);
-                    return true;
-                case R.id.navigation_forecast:
-                    Intent j = new Intent(Account.this, ForecastTimes.class);
-                    startActivity(j);
-                    return true;
-            }
-            return false;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,16 +38,12 @@ public class Account extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        ImageView settingsIcon = findViewById(R.id.settingsIcon);
-        settingsIcon.setOnClickListener(new View.OnClickListener() {
+        ImageView websiteLink = findViewById(R.id.website_link);
+        websiteLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Account.this, Settings.class);
-                startActivity(i);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://interstellarstudios.co.uk/"));
+                startActivity(browserIntent);
             }
         });
 
@@ -90,7 +67,7 @@ public class Account extends AppCompatActivity {
             }
         });
 
-        ImageView editAccountDetails = findViewById(R.id.edit_details_button);
+        Button editAccountDetails = findViewById(R.id.edit_account_button);
         editAccountDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +77,7 @@ public class Account extends AppCompatActivity {
             }
         });
 
-        ImageView logOut = findViewById(R.id.log_out_button);
+        Button logOut = findViewById(R.id.log_out_button);
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -6,18 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,7 +27,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,8 +38,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import hotchemi.android.rate.AppRate;
+import sendinblue.ApiClient;
+import sendinblue.ApiException;
+import sendinblue.Configuration;
+import sendinblue.auth.ApiKeyAuth;
+import sibApi.SmtpApi;
+import sibModel.CreateSmtpEmail;
+import sibModel.SendSmtpEmail;
+import sibModel.SendSmtpEmailSender;
+import sibModel.SendSmtpEmailTo;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -46,52 +63,49 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private TextView mPressureText;
     private TextView mMinTempText;
     private TextView mMaxTempText;
-    private TextView mLastUpdatedText;
     private TextView mWindSpeedText;
     private TextView mWindDegreesText;
     private TextView mSunriseText;
     private TextView mSunsetText;
+    private TextView mDay1Text;
+    private TextView mDay2Text;
+    private TextView mDay3Text;
+    private TextView mDay4Text;
+    private TextView mDay5Text;
+    private TextView mDescription1Text;
+    private TextView mDescription2Text;
+    private TextView mDescription3Text;
+    private TextView mDescription4Text;
+    private TextView mDescription5Text;
+    private TextView mTempForecast1;
+    private TextView mTempForecast2;
+    private TextView mTempForecast3;
+    private TextView mTempForecast4;
+    private TextView mTempForecast5;
+    private EditText mSearchField;
+    private EditText mSharedUserEmailText;
+    private String mSharedUserEmail;
     private String mCurrentUserId;
     private String mHomeLocation;
-    private String favouriteLocation1;
-    private String favouriteLocation2;
-    private String favouriteLocation3;
-    private String favouriteLocation4;
-    private String favouriteLocation5;
-    private String favouriteLocation6;
-    private String favouriteLocation7;
-    private String favouriteLocation8;
-    private String favouriteLocation9;
-    private String favouriteLocation10;
-    private Boolean mSwitchOnOff;
     private String mLocationFinal;
+    private String mSearchLocation;
+    private String mSharedUserId;
+    private String mCurrentUserEmail;
+    private String mFavouriteLocation1;
+    private String mFavouriteLocation2;
+    private String mFavouriteLocation3;
+    private String mFavouriteLocation4;
+    private String mFavouriteLocation5;
+    private Boolean mSwitchOnOff;
+    private FirebaseFirestore mFireBaseFireStore;
+    private FirebaseAnalytics mFireBaseAnalytics;
     private ProgressDialog mProgressDialog;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_forecast:
-                    Intent i = new Intent(Home.this, ForecastTimes.class);
-                    i.putExtra("location", mLocationFinal);
-                    startActivity(i);
-                    return true;
-                case R.id.navigation_account:
-                    Intent j = new Intent(Home.this, Account.class);
-                    startActivity(j);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //app rate
         AppRate.with(this)
                 .setInstallDays(7)
                 .setLaunchTimes(5)
@@ -100,20 +114,20 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         AppRate.showRateDialogIfMeetsConditions(this);
         //AppRate.with(this).showRateDialog(this);
 
-        //Loading shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         mSwitchOnOff = sharedPreferences.getBoolean("switchUnits", false);
 
         FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore mFireBaseFireStore = FirebaseFirestore.getInstance();
+        mFireBaseFireStore = FirebaseFirestore.getInstance();
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (mFireBaseAuth.getCurrentUser() != null) {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
+            FirebaseUser firebaseUser = mFireBaseAuth.getCurrentUser();
+            mCurrentUserEmail = firebaseUser.getEmail();
         }
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
+        mSharedUserEmailText = findViewById(R.id.shared_user_email);
         mTemperatureText = findViewById(R.id.temperatureText);
         mLocationText = findViewById(R.id.locationText);
         mDescriptionText = findViewById(R.id.descriptionText);
@@ -121,50 +135,98 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         mPressureText = findViewById(R.id.pressureText);
         mMinTempText = findViewById(R.id.minTempText);
         mMaxTempText = findViewById(R.id.maxTempText);
-        mLastUpdatedText = findViewById(R.id.lastUpdatedText);
         mWindSpeedText = findViewById(R.id.windSpeedText);
         mWindDegreesText = findViewById(R.id.windDegreesText);
         mSunriseText = findViewById(R.id.sunriseText);
         mSunsetText = findViewById(R.id.sunsetText);
         mProgressDialog = new ProgressDialog(this);
 
-        ImageView shareImage = findViewById(R.id.share_button);
-        shareImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Home.this, Share.class);
-                i.putExtra("location", mLocationFinal);
-                startActivity(i);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
+        mDay1Text = findViewById(R.id.day1);
+        mDay2Text = findViewById(R.id.day2);
+        mDay3Text = findViewById(R.id.day3);
+        mDay4Text = findViewById(R.id.day4);
+        mDay5Text = findViewById(R.id.day5);
+        mDescription1Text = findViewById(R.id.description1);
+        mDescription2Text = findViewById(R.id.description2);
+        mDescription3Text = findViewById(R.id.description3);
+        mDescription4Text = findViewById(R.id.description4);
+        mDescription5Text = findViewById(R.id.description5);
+        mTempForecast1 = findViewById(R.id.tempForecast1);
+        mTempForecast2 = findViewById(R.id.tempForecast2);
+        mTempForecast3 = findViewById(R.id.tempForecast3);
+        mTempForecast4 = findViewById(R.id.tempForecast4);
+        mTempForecast5 = findViewById(R.id.tempForecast5);
 
-        TextView shareText = findViewById(R.id.share_textview);
-        shareText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Home.this, Share.class);
-                i.putExtra("location", mLocationFinal);
-                startActivity(i);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.drawer_view);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        ImageView navDrawerMenu = findViewById(R.id.navDrawerMenu);
+        navDrawerMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(Gravity.LEFT);
+            }
+        });
+
+        ImageView searchIcon = findViewById(R.id.searchButton);
+        searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSearchLocation = mSearchField.getText().toString();
+                findWeather(mSearchLocation);
+                findForecast(mSearchLocation);
+            }
+        });
+
+        mSearchField = findViewById(R.id.searchField);
+        mSearchField.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            mSearchLocation = mSearchField.getText().toString();
+                            findWeather(mSearchLocation);
+                            findForecast(mSearchLocation);
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
+        ImageView shareIcon = findViewById(R.id.share_icon);
+        shareIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareWeather();
+                sendMail();
+            }
+        });
+
+        mSharedUserEmailText = findViewById(R.id.shared_user_email);
+        mSharedUserEmailText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            shareWeather();
+                            sendMail();
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
         final Menu menu = navigationView.getMenu();
-        MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
-        navHomeLocation.setTitle("Home Location");
 
         mProgressDialog.setMessage("Refreshing");
         mProgressDialog.show();
@@ -180,7 +242,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         HomeLocationModel homeLocationModel = document.toObject(HomeLocationModel.class);
                         mHomeLocation = homeLocationModel.getHomeLocation();
 
+                        MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
+                        navHomeLocation.setTitle(mHomeLocation);
+
                         findWeather(mHomeLocation);
+                        findForecast(mHomeLocation);
                     }
                 }
             }
@@ -195,60 +261,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     if (document.exists()) {
 
                         FavouriteLocationModel favouriteLocationModel = document.toObject(FavouriteLocationModel.class);
-                        favouriteLocation1 = favouriteLocationModel.getFavouriteLocation1();
-                        favouriteLocation2 = favouriteLocationModel.getFavouriteLocation2();
-                        favouriteLocation3 = favouriteLocationModel.getFavouriteLocation3();
-                        favouriteLocation4 = favouriteLocationModel.getFavouriteLocation4();
-                        favouriteLocation5 = favouriteLocationModel.getFavouriteLocation5();
-                        favouriteLocation6 = favouriteLocationModel.getFavouriteLocation6();
-                        favouriteLocation7 = favouriteLocationModel.getFavouriteLocation7();
-                        favouriteLocation8 = favouriteLocationModel.getFavouriteLocation8();
-                        favouriteLocation9 = favouriteLocationModel.getFavouriteLocation9();
-                        favouriteLocation10 = favouriteLocationModel.getFavouriteLocation10();
+                        mFavouriteLocation1 = favouriteLocationModel.getFavouriteLocation1();
+                        mFavouriteLocation2 = favouriteLocationModel.getFavouriteLocation2();
+                        mFavouriteLocation3 = favouriteLocationModel.getFavouriteLocation3();
+                        mFavouriteLocation4 = favouriteLocationModel.getFavouriteLocation4();
+                        mFavouriteLocation5 = favouriteLocationModel.getFavouriteLocation5();
 
-                        MenuItem navLocation2 = menu.findItem(R.id.nav_location2);
-                        navLocation2.setTitle(favouriteLocation1);
-                        MenuItem navLocation3 = menu.findItem(R.id.nav_location3);
-                        navLocation3.setTitle(favouriteLocation2);
-                        MenuItem navLocation4 = menu.findItem(R.id.nav_location4);
-                        navLocation4.setTitle(favouriteLocation3);
-                        MenuItem navLocation5 = menu.findItem(R.id.nav_location5);
-                        navLocation5.setTitle(favouriteLocation4);
-                        MenuItem navLocation6 = menu.findItem(R.id.nav_location6);
-                        navLocation6.setTitle(favouriteLocation5);
-                        MenuItem navLocation7 = menu.findItem(R.id.nav_location7);
-                        navLocation7.setTitle(favouriteLocation6);
-                        MenuItem navLocation8 = menu.findItem(R.id.nav_location8);
-                        navLocation8.setTitle(favouriteLocation7);
-                        MenuItem navLocation9 = menu.findItem(R.id.nav_location9);
-                        navLocation9.setTitle(favouriteLocation8);
-                        MenuItem navLocation10 = menu.findItem(R.id.nav_location10);
-                        navLocation10.setTitle(favouriteLocation9);
-                        MenuItem navLocation11 = menu.findItem(R.id.nav_location11);
-                        navLocation11.setTitle(favouriteLocation10);
+                        MenuItem favourite_location1 = menu.findItem(R.id.favourite_location1);
+                        favourite_location1.setTitle(mFavouriteLocation1);
+                        MenuItem favourite_location2 = menu.findItem(R.id.favourite_location2);
+                        favourite_location2.setTitle(mFavouriteLocation2);
+                        MenuItem favourite_location3 = menu.findItem(R.id.favourite_location3);
+                        favourite_location3.setTitle(mFavouriteLocation3);
+                        MenuItem favourite_location4 = menu.findItem(R.id.favourite_location4);
+                        favourite_location4.setTitle(mFavouriteLocation4);
+                        MenuItem favourite_location5 = menu.findItem(R.id.favourite_location5);
+                        favourite_location5.setTitle(mFavouriteLocation5);
                     }
                 }
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            Intent i = new Intent(Home.this, Settings.class);
-            startActivity(i);
-            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -267,26 +299,30 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (id == R.id.nav_home_location) {
             findWeather(mHomeLocation);
-        } else if (id == R.id.nav_location2) {
-            findWeather(favouriteLocation1);
-        } else if (id == R.id.nav_location3) {
-            findWeather(favouriteLocation2);
-        } else if (id == R.id.nav_location4) {
-            findWeather(favouriteLocation3);
-        } else if (id == R.id.nav_location5) {
-            findWeather(favouriteLocation4);
-        } else if (id == R.id.nav_location6) {
-            findWeather(favouriteLocation5);
-        } else if (id == R.id.nav_location7) {
-            findWeather(favouriteLocation6);
-        } else if (id == R.id.nav_location8) {
-            findWeather(favouriteLocation7);
-        } else if (id == R.id.nav_location9) {
-            findWeather(favouriteLocation8);
-        } else if (id == R.id.nav_location10) {
-            findWeather(favouriteLocation9);
-        } else if (id == R.id.nav_location11) {
-            findWeather(favouriteLocation10);
+            findForecast(mHomeLocation);
+        } else if (id == R.id.favourite_location1) {
+            findWeather(mFavouriteLocation1);
+            findForecast(mFavouriteLocation1);
+        } else if (id == R.id.favourite_location2) {
+            findWeather(mFavouriteLocation2);
+            findForecast(mFavouriteLocation2);
+        } else if (id == R.id.favourite_location3) {
+            findWeather(mFavouriteLocation3);
+            findForecast(mFavouriteLocation3);
+        } else if (id == R.id.favourite_location4) {
+            findWeather(mFavouriteLocation4);
+            findForecast(mFavouriteLocation4);
+        } else if (id == R.id.favourite_location5) {
+            findWeather(mFavouriteLocation5);
+            findForecast(mFavouriteLocation5);
+        } else if (id == R.id.account) {
+            Intent i = new Intent(Home.this, Account.class);
+            startActivity(i);
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        } else if (id == R.id.settings) {
+            Intent j = new Intent(Home.this, Settings.class);
+            startActivity(j);
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -339,22 +375,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String windDegrees = String.valueOf(windObject.getInt("deg"));
                     int windDegreesInt = Integer.parseInt(windDegrees);
 
-                    //clouds object
-                    //JSONObject cloudsObject = response.getJSONObject("clouds");
-                    //String clouds = String.valueOf(cloudsObject.getInt("all"));
-
                     //name object
                     String city = response.getString("name");
 
-                    //last update object
-                    String lastUpdate = response.getString("dt");
-
                     //unix time conversion
                     SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss (z)");
-                    int lastUpdateInt = Integer.parseInt(lastUpdate);
-                    long lastUpdateUnix = lastUpdateInt;
-                    Date date = new java.util.Date(lastUpdateUnix * 1000L);
-                    String lastUpdateFinal = ("Last Updated: " + sdf.format(date));
                     int sunriseInt = Integer.parseInt(sunrise);
                     long sunriseUnix = sunriseInt;
                     Date date2 = new java.util.Date(sunriseUnix * 1000L);
@@ -427,7 +452,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     mDescriptionText.setText(description);
                     mHumidityText.setText(humidityFinal);
                     mPressureText.setText(PressureFinal);
-                    mLastUpdatedText.setText(lastUpdateFinal);
                     mSunriseText.setText(sunriseFinal);
                     mSunsetText.setText(sunsetFinal);
 
@@ -443,6 +467,191 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         mTemperatureText.setText(temperatureFinalMetric);
                     }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(Home.this);
+        queue.add(jor);
+    }
+
+    private void findForecast(String city) {
+
+        String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?q=";
+        String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
+        String unitsURL;
+
+        if (mSwitchOnOff) {
+            unitsURL = "&units=imperial";
+        } else {
+            unitsURL = "&units=metric";
+        }
+
+        String FINAL_URL = BASE_URL + city + API_KEY + unitsURL;
+
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, FINAL_URL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMMM yyyy");
+
+                    //list array
+                    JSONArray listArray = response.getJSONArray("list");
+
+                    //index 0 of the list array
+                    JSONObject arrayObject0 = listArray.getJSONObject(11);
+
+                    //date time
+                    String dateTime0 = arrayObject0.getString("dt");
+
+                    //main object inside list array
+                    JSONObject mainObject0 = arrayObject0.getJSONObject("main");
+                    String tempForecast0 = String.valueOf(mainObject0.getInt("temp"));
+
+                    //weather object inside list array
+                    JSONArray weatherArray0 = arrayObject0.getJSONArray("weather");
+                    JSONObject weatherObject0 = weatherArray0.getJSONObject(0);
+                    String description0 = weatherObject0.getString("description");
+
+                    //converting dt
+                    int dateTimeInt0 = Integer.parseInt(dateTime0);
+                    long dateTimeUnix0 = dateTimeInt0;
+                    Date date0 = new java.util.Date(dateTimeUnix0 * 1000L);
+                    String dateTimeFinal0 = (sdf.format(date0));
+
+                    //final strings
+                    String temperatureForecastMetric0 = (tempForecast0 + "°C");
+                    String temperatureForecastImperial0 = (tempForecast0 + "°F");
+
+                    //index 1 of the list array
+                    JSONObject arrayObject1 = listArray.getJSONObject(18);
+
+                    //date time
+                    String dateTime1 = arrayObject1.getString("dt");
+
+                    //main object inside list array
+                    JSONObject mainObject1 = arrayObject1.getJSONObject("main");
+                    String tempForecast1 = String.valueOf(mainObject1.getInt("temp"));
+
+                    //weather object inside list array
+                    JSONArray weatherArray1 = arrayObject1.getJSONArray("weather");
+                    JSONObject weatherObject1 = weatherArray1.getJSONObject(0);
+                    String description1 = weatherObject1.getString("description");
+
+                    //converting dt
+                    int dateTimeInt1 = Integer.parseInt(dateTime1);
+                    long dateTimeUnix1 = dateTimeInt1;
+                    Date date1 = new java.util.Date(dateTimeUnix1 * 1000L);
+                    String dateTimeFinal1 = (sdf.format(date1));
+
+                    //final strings
+                    String temperatureForecastMetric1 = (tempForecast1 + "°C");
+                    String temperatureForecastImperial1 = (tempForecast1 + "°F");
+                    //index 2 of the list array
+                    JSONObject arrayObject2 = listArray.getJSONObject(25);
+
+                    //date time
+                    String dateTime2 = arrayObject2.getString("dt");
+
+                    //main object inside list array
+                    JSONObject mainObject2 = arrayObject2.getJSONObject("main");
+                    String tempForecast2 = String.valueOf(mainObject2.getInt("temp"));
+
+                    //weather object inside list array
+                    JSONArray weatherArray2 = arrayObject2.getJSONArray("weather");
+                    JSONObject weatherObject2 = weatherArray2.getJSONObject(0);
+                    String description2 = weatherObject2.getString("description");
+
+                    //converting dt
+                    int dateTimeInt2 = Integer.parseInt(dateTime2);
+                    long dateTimeUnix2 = dateTimeInt2;
+                    Date date2 = new java.util.Date(dateTimeUnix2 * 1000L);
+                    String dateTimeFinal2 = (sdf.format(date2));
+
+                    //final strings
+                    String temperatureForecastMetric2 = (tempForecast2 + "°C");
+                    String temperatureForecastImperial2 = (tempForecast2 + "°F");
+
+                    //index 3 of the list array
+                    JSONObject arrayObject3 = listArray.getJSONObject(32);
+
+                    //date time
+                    String dateTime3 = arrayObject3.getString("dt");
+
+                    //main object inside list array
+                    JSONObject mainObject3 = arrayObject3.getJSONObject("main");
+                    String tempForecast3 = String.valueOf(mainObject3.getInt("temp"));
+
+                    //weather object inside list array
+                    JSONArray weatherArray3 = arrayObject3.getJSONArray("weather");
+                    JSONObject weatherObject3 = weatherArray3.getJSONObject(0);
+                    String description3 = weatherObject3.getString("description");
+
+                    //converting dt
+                    int dateTimeInt3 = Integer.parseInt(dateTime3);
+                    long dateTimeUnix3 = dateTimeInt3;
+                    Date date3 = new java.util.Date(dateTimeUnix3 * 1000L);
+                    String dateTimeFinal3 = (sdf.format(date3));
+
+                    //final strings
+                    String temperatureForecastMetric3 = (tempForecast3 + "°C");
+                    String temperatureForecastImperial3 = (tempForecast3 + "°F");
+
+                    //index 4 of the list array
+                    JSONObject arrayObject4 = listArray.getJSONObject(39);
+
+                    //date time
+                    String dateTime4 = arrayObject4.getString("dt");
+
+                    //main object inside list array
+                    JSONObject mainObject4 = arrayObject4.getJSONObject("main");
+                    String tempForecast4 = String.valueOf(mainObject4.getInt("temp"));
+
+                    //weather object inside list array
+                    JSONArray weatherArray4 = arrayObject4.getJSONArray("weather");
+                    JSONObject weatherObject4 = weatherArray4.getJSONObject(0);
+                    String description4 = weatherObject4.getString("description");
+
+                    //converting dt
+                    int dateTimeInt4 = Integer.parseInt(dateTime4);
+                    long dateTimeUnix4 = dateTimeInt4;
+                    Date date4 = new java.util.Date(dateTimeUnix4 * 1000L);
+                    String dateTimeFinal4 = (sdf.format(date4));
+
+                    //final strings
+                    String temperatureForecastMetric4 = (tempForecast4 + "°C");
+                    String temperatureForecastImperial4 = (tempForecast4 + "°F");
+
+                    mDay1Text.setText(dateTimeFinal0);
+                    mDay2Text.setText(dateTimeFinal1);
+                    mDay3Text.setText(dateTimeFinal2);
+                    mDay4Text.setText(dateTimeFinal3);
+                    mDay5Text.setText(dateTimeFinal4);
+                    mDescription1Text.setText(description0);
+                    mDescription2Text.setText(description1);
+                    mDescription3Text.setText(description2);
+                    mDescription4Text.setText(description3);
+                    mDescription5Text.setText(description4);
+
+                    if (mSwitchOnOff) {
+                        mTempForecast1.setText(temperatureForecastImperial0);
+                        mTempForecast2.setText(temperatureForecastImperial1);
+                        mTempForecast3.setText(temperatureForecastImperial2);
+                        mTempForecast4.setText(temperatureForecastImperial3);
+                        mTempForecast5.setText(temperatureForecastImperial4);
+                    } else {
+                        mTempForecast1.setText(temperatureForecastMetric0);
+                        mTempForecast2.setText(temperatureForecastMetric1);
+                        mTempForecast3.setText(temperatureForecastMetric2);
+                        mTempForecast4.setText(temperatureForecastMetric3);
+                        mTempForecast5.setText(temperatureForecastMetric4);
+                    }
                     mProgressDialog.dismiss();
 
                 } catch (JSONException e) {
@@ -457,5 +666,913 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         });
         RequestQueue queue = Volley.newRequestQueue(Home.this);
         queue.add(jor);
+    }
+
+    private void shareWeather() {
+
+        final Bundle analyticsBundle = new Bundle();
+
+        mSharedUserEmail = mSharedUserEmailText.getText().toString().trim();
+        if (mSharedUserEmail.trim().isEmpty()) {
+            return;
+        }
+
+        DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(mSharedUserEmail);
+        userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        UserIdModel userDetails = document.toObject(UserIdModel.class);
+                        mSharedUserId = userDetails.getUserId();
+
+                        Map<String, Object> notificationMessage = new HashMap<>();
+                        notificationMessage.put("from", mCurrentUserEmail);
+                        CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Notifications").collection("Notifications");
+                        notificationPath.add(notificationMessage);
+
+                        DocumentReference sharedWeatherPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared");
+                        sharedWeatherPath.set(new SharedWeatherModel(mLocationFinal));
+
+                        Toast.makeText(Home.this, "Weather report shared with and emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
+                        mFireBaseAnalytics.logEvent("report_shared_and_emailed", analyticsBundle);
+                    } else {
+                        Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
+                        mFireBaseAnalytics.logEvent("report_share_email_only_called", analyticsBundle);
+                    }
+                } else {
+                    Toast.makeText(Home.this, "Please ensure that there is an active network connection to share", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void sendMail() {
+
+        mSharedUserEmail = mSharedUserEmailText.getText().toString().trim();
+        if (mSharedUserEmail.trim().isEmpty()) {
+            return;
+        }
+
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    String temperature = mTemperatureText.getText().toString();
+                    String minTemp = mMinTempText.getText().toString();
+                    String maxTemp = mMaxTempText.getText().toString();
+                    String description = mDescriptionText.getText().toString().toUpperCase();
+                    String humidity = mHumidityText.getText().toString();
+                    String pressure = mPressureText.getText().toString();
+                    String windSpeed = mWindSpeedText.getText().toString();
+                    String windDirection = mWindDegreesText.getText().toString();
+                    String sunrise = mSunriseText.getText().toString();
+                    String sunset = mSunsetText.getText().toString();
+                    String day1 = mDay1Text.getText().toString();
+                    String day2 = mDay2Text.getText().toString();
+                    String day3 = mDay3Text.getText().toString();
+                    String day4 = mDay4Text.getText().toString();
+                    String day5 = mDay5Text.getText().toString();
+                    String descrDay1 = mDescription1Text.getText().toString();
+                    String descrDay2 = mDescription2Text.getText().toString();
+                    String descrDay3 = mDescription3Text.getText().toString();
+                    String descrDay4 = mDescription4Text.getText().toString();
+                    String descrDay5= mDescription5Text.getText().toString();
+                    String tempDay1 = mTempForecast1.getText().toString();
+                    String tempDay2 = mTempForecast2.getText().toString();
+                    String tempDay3 = mTempForecast3.getText().toString();
+                    String tempDay4 = mTempForecast4.getText().toString();
+                    String tempDay5= mTempForecast5.getText().toString();
+
+                    ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+                    ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
+                    apiKey.setApiKey("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");
+
+                    SmtpApi apiInstance = new SmtpApi();
+
+                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<SendSmtpEmailTo>();
+                    emailArrayList.add(new SendSmtpEmailTo().email(mSharedUserEmail));
+
+                    SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
+                    sendSmtpEmail.sender(new SendSmtpEmailSender().email("weathershare@interstellarstudios.co.uk").name("WeatherShare"));
+                    sendSmtpEmail.to(emailArrayList);
+                    sendSmtpEmail.subject("You've received a weather report from " + mCurrentUserEmail);
+                    sendSmtpEmail.htmlContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
+                            "        /* Resets */\n" +
+                            "        .ReadMsgBody { width: 100%; background-color: #ebebeb;}\n" +
+                            "        .ExternalClass {width: 100%; background-color: #ebebeb;}\n" +
+                            "        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height:100%;}\n" +
+                            "        a[x-apple-data-detectors]{\n" +
+                            "            color:inherit !important;\n" +
+                            "            text-decoration:none !important;\n" +
+                            "            font-size:inherit !important;\n" +
+                            "            font-family:inherit !important;\n" +
+                            "            font-weight:inherit !important;\n" +
+                            "            line-height:inherit !important;\n" +
+                            "        }        \n" +
+                            "        body {-webkit-text-size-adjust:none; -ms-text-size-adjust:none;}\n" +
+                            "        body {margin:0; padding:0;}\n" +
+                            "        .yshortcuts a {border-bottom: none !important;}\n" +
+                            "        .rnb-del-min-width{ min-width: 0 !important; }\n" +
+                            "\n" +
+                            "        /* Add new outlook css start */\n" +
+                            "        .templateContainer{\n" +
+                            "            max-width:590px !important;\n" +
+                            "            width:auto !important;\n" +
+                            "        }\n" +
+                            "        /* Add new outlook css end */\n" +
+                            "\n" +
+                            "        /* Image width by default for 3 columns */\n" +
+                            "        img[class=\"rnb-col-3-img\"] {\n" +
+                            "        max-width:170px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Image width by default for 2 columns */\n" +
+                            "        img[class=\"rnb-col-2-img\"] {\n" +
+                            "        max-width:264px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Image width by default for 2 columns aside small size */\n" +
+                            "        img[class=\"rnb-col-2-img-side-xs\"] {\n" +
+                            "        max-width:180px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Image width by default for 2 columns aside big size */\n" +
+                            "        img[class=\"rnb-col-2-img-side-xl\"] {\n" +
+                            "        max-width:350px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Image width by default for 1 column */\n" +
+                            "        img[class=\"rnb-col-1-img\"] {\n" +
+                            "        max-width:550px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Image width by default for header */\n" +
+                            "        img[class=\"rnb-header-img\"] {\n" +
+                            "        max-width:590px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* Ckeditor line-height spacing */\n" +
+                            "        .rnb-force-col p, ul, ol{margin:0px!important;}\n" +
+                            "        .rnb-del-min-width p, ul, ol{margin:0px!important;}\n" +
+                            "\n" +
+                            "        /* tmpl-2 preview */\n" +
+                            "        .rnb-tmpl-width{ width:100%!important;}\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .rnb-social-width{padding-right:15px!important;}\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .rnb-social-align{float:right!important;}\n" +
+                            "\n" +
+                            "        /* Ul Li outlook extra spacing fix */\n" +
+                            "        li{mso-margin-top-alt: 0; mso-margin-bottom-alt: 0;}        \n" +
+                            "\n" +
+                            "        /* Outlook fix */\n" +
+                            "        table {mso-table-lspace:0pt; mso-table-rspace:0pt;}\n" +
+                            "    \n" +
+                            "        /* Outlook fix */\n" +
+                            "        table, tr, td {border-collapse: collapse;}\n" +
+                            "\n" +
+                            "        /* Outlook fix */\n" +
+                            "        p,a,li,blockquote {mso-line-height-rule:exactly;} \n" +
+                            "\n" +
+                            "        /* Outlook fix */\n" +
+                            "        .msib-right-img { mso-padding-alt: 0 !important;}\n" +
+                            "\n" +
+                            "        @media only screen and (min-width:590px){\n" +
+                            "        /* mac fix width */\n" +
+                            "        .templateContainer{width:590px !important;}\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        @media screen and (max-width: 360px){\n" +
+                            "        /* yahoo app fix width \"tmpl-2 tmpl-10 tmpl-13\" in android devices */\n" +
+                            "        .rnb-yahoo-width{ width:360px !important;}\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        @media screen and (max-width: 380px){\n" +
+                            "        /* fix width and font size \"tmpl-4 tmpl-6\" in mobile preview */\n" +
+                            "        .element-img-text{ font-size:24px !important;}\n" +
+                            "        .element-img-text2{ width:230px !important;}\n" +
+                            "        .content-img-text-tmpl-6{ font-size:24px !important;}\n" +
+                            "        .content-img-text2-tmpl-6{ width:220px !important;}\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        @media screen and (max-width: 480px) {\n" +
+                            "        td[class=\"rnb-container-padding\"] {\n" +
+                            "        padding-left: 10px !important;\n" +
+                            "        padding-right: 10px !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* force container nav to (horizontal) blocks */\n" +
+                            "        td.rnb-force-nav {\n" +
+                            "        display: inherit;\n" +
+                            "        }\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        @media only screen and (max-width: 600px) {\n" +
+                            "\n" +
+                            "        /* center the address &amp; social icons */\n" +
+                            "        .rnb-text-center {text-align:center !important;}\n" +
+                            "\n" +
+                            "        /* force container columns to (horizontal) blocks */\n" +
+                            "        td.rnb-force-col {\n" +
+                            "        display: block;\n" +
+                            "        padding-right: 0 !important;\n" +
+                            "        padding-left: 0 !important;\n" +
+                            "        width:100%;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-container {\n" +
+                            "         width: 100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-btn-col-content {\n" +
+                            "        width: 100% !important;\n" +
+                            "        }\n" +
+                            "        table.rnb-col-3 {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "\n" +
+                            "        /* change left/right padding and margins to top/bottom ones */\n" +
+                            "        margin-bottom: 10px;\n" +
+                            "        padding-bottom: 10px;\n" +
+                            "        /*border-bottom: 1px solid #eee;*/\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-last-col-3 {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table[class~=\"rnb-col-2\"] {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "\n" +
+                            "        /* change left/right padding and margins to top/bottom ones */\n" +
+                            "        margin-bottom: 10px;\n" +
+                            "        padding-bottom: 10px;\n" +
+                            "        /*border-bottom: 1px solid #eee;*/\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-col-2-noborder-onright {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "\n" +
+                            "        /* change left/right padding and margins to top/bottom ones */\n" +
+                            "        margin-bottom: 10px;\n" +
+                            "        padding-bottom: 10px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-col-2-noborder-onleft {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "\n" +
+                            "        /* change left/right padding and margins to top/bottom ones */\n" +
+                            "        margin-top: 10px;\n" +
+                            "        padding-top: 10px;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-last-col-2 {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        table.rnb-col-1 {\n" +
+                            "        /* unset table align=\"left/right\" */\n" +
+                            "        float: none !important;\n" +
+                            "        width: 100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-col-3-img {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-col-2-img {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-col-2-img-side-xs {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-col-2-img-side-xl {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-col-1-img {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-header-img {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        margin:0 auto;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        img.rnb-logo-img {\n" +
+                            "        /**max-width:none !important;**/\n" +
+                            "        width:100% !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        td.rnb-mbl-float-none {\n" +
+                            "        float:inherit !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        .img-block-center{text-align:center !important;}\n" +
+                            "\n" +
+                            "        .logo-img-center\n" +
+                            "        {\n" +
+                            "            float:inherit !important;\n" +
+                            "        }\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .rnb-social-align{margin:0 auto !important; float:inherit !important;}\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .rnb-social-center{display:inline-block;}\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .social-text-spacing{margin-bottom:0px !important; padding-bottom:0px !important;}\n" +
+                            "\n" +
+                            "        /* tmpl-11 preview */\n" +
+                            "        .social-text-spacing2{padding-top:15px !important;}\n" +
+                            "\n" +
+                            "    }</style><!--[if gte mso 11]><style type=\"text/css\">table{border-spacing: 0; }table td {border-collapse: separate;}</style><![endif]--><!--[if !mso]><!--><style type=\"text/css\">table{border-spacing: 0;} table td {border-collapse: collapse;}</style> <!--<![endif]--><!--[if gte mso 15]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--></head><body>\n" +
+                            "\n" +
+                            "<table border=\"0\" align=\"center\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" class=\"main-template\" bgcolor=\"#f9fafc\" style=\"background-color: rgb(249, 250, 252);\">\n" +
+                            "\n" +
+                            "    <tbody><tr style=\"display:none !important; font-size:1px; mso-hide: all;\"><td></td><td></td></tr><tr>\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "        <!--[if gte mso 9]>\n" +
+                            "                        <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                        <tr>\n" +
+                            "                        <td align=\"center\" valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                        <![endif]-->\n" +
+                            "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"templateContainer\" style=\"max-width:590px!important; width: 590px;\">\n" +
+                            "        <tbody><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <table class=\"rnb-del-min-width rnb-tmpl-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_9\" id=\"Layout_9\">\n" +
+                            "                    \n" +
+                            "                    <tbody><tr>\n" +
+                            "                        <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width: 590px;\">\n" +
+                            "                            <table width=\"100%\" cellpadding=\"0\" border=\"0\" bgcolor=\"#f9fafc\" align=\"center\" cellspacing=\"0\" style=\"background-color: rgb(249, 250, 252);\">\n" +
+                            "                                <tbody><tr>\n" +
+                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                </tr>\n" +
+                            "                                <tr>\n" +
+                            "                                    <td align=\"center\" height=\"20\" style=\"font-family:Arial,Helvetica,sans-serif; color:#666666;font-size:13px;font-weight:normal;text-align: center;\">\n" +
+                            "                                        <span style=\"color: rgb(102, 102, 102); text-decoration: underline;\">\n" +
+                            "                                            <a target=\"_blank\" href=\"{{ mirror }}\" style=\"text-decoration: underline; color: rgb(102, 102, 102);\">View in browser</a></span>\n" +
+                            "                                    </td>\n" +
+                            "                                </tr>\n" +
+                            "                                <tr>\n" +
+                            "                                    <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                </tr>\n" +
+                            "                            </tbody></table>\n" +
+                            "                        </td>\n" +
+                            "                    </tr>\n" +
+                            "                </tbody></table>\n" +
+                            "                \n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_8\" id=\"Layout_8\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\" style=\"min-width:590px;\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"background-color: rgb(255, 255, 255); border-radius: 0px; padding-left: 20px; padding-right: 20px; border-collapse: separate;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "                                    <table width=\"100%\" cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td valign=\"top\" align=\"center\">\n" +
+                            "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 0px;\">\n" +
+                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd4237f27351d65c77e45f2.jpg\"></div></div></td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                </tbody></table>\n" +
+                            "                                                </td>\n" +
+                            "                                        </tr>\n" +
+                            "                                    </tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table>\n" +
+                            "            <!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "            \n" +
+                            "        </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "            \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_7\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"background-color: rgb(255, 255, 255); padding-left: 20px; padding-right: 20px; border-collapse: separate; border-radius: 0px; border-bottom: 0px none rgb(200, 200, 200);\">\n" +
+                            "\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                        </tr>\n" +
+                            "                                        <tr>\n" +
+                            "                                            <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                                <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td class=\"rnb-force-col\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "\n" +
+                            "                                                            <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" align=\"left\" class=\"rnb-col-1\">\n" +
+                            "\n" +
+                            "                                                                <tbody><tr>\n" +
+                            "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div><u><span style=\"font-size:16px;\"><strong>" + mLocationFinal + "</strong></span></u></div>\n" +
+                            "\n" +
+                            "<div><em><span style=\"font-size:16px;\">" + description + "</span></em></div>\n" +
+                            "\n" +
+                            "<div><br>\n" +
+                            "Current Temperature: " + temperature + "</div>\n" +
+                            "\n" +
+                            "<div>Minimum Temperature: " + minTemp + "</div>\n" +
+                            "\n" +
+                            "<div>Maximum Temperature: " + maxTemp + "</div>\n" +
+                            "\n" +
+                            "<div>Humidity: " + humidity + "</div>\n" +
+                            "\n" +
+                            "<div>Pressure: " + pressure + "</div>\n" +
+                            "\n" +
+                            "<div>Wind Speed: " + windSpeed + "</div>\n" +
+                            "\n" +
+                            "<div>Wind Direction: " + windDirection + "</div>\n" +
+                            "\n" +
+                            "<div>Sunrise Time: " + sunrise + "</div>\n" +
+                            "\n" +
+                            "<div>Sunset Time: " + sunset + "</div>\n" +
+                            "\n" +
+                            "<div>&nbsp;</div>\n" +
+                            "\n" +
+                            "<div><span style=\"font-size:14px;\"><b>5 Day Forecast:</b></span></div>\n" +
+                            "\n" +
+                            "<div>&nbsp;</div>\n" +
+                            "\n" +
+                            "<div>" + day1 + " - " + descrDay1 + " - " + tempDay1 + "</div>\n" +
+                            "\n" +
+                            "<div>" + day2 + " - " + descrDay2 + " - " + tempDay2 + "</div>\n" +
+                            "\n" +
+                            "<div>" + day3 + " - " + descrDay3 + " - " + tempDay3 + "</div>\n" +
+                            "\n" +
+                            "<div>" + day4 + " - " + descrDay4 + " - " + tempDay4 + "</div>\n" +
+                            "\n" +
+                            "<div>" + day5 + " - " + descrDay5 + " - " + tempDay5 + "</div>\n" +
+                            "</td>\n" +
+                            "                                                                </tr>\n" +
+                            "                                                                </tbody></table>\n" +
+                            "\n" +
+                            "                                                            </td></tr>\n" +
+                            "                                                </tbody></table></td>\n" +
+                            "                                        </tr>\n" +
+                            "                                        <tr>\n" +
+                            "                                            <td height=\"20\" style=\"font-size:1px; line-height:0px\">&nbsp;</td>\n" +
+                            "                                        </tr>\n" +
+                            "                                    </tbody></table>\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table><!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "\n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_6\" id=\"Layout_6\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td class=\"rnb-force-col\" width=\"550\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-1\" width=\"550\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"center\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                <tbody>\n" +
+                            "                                                                    <tr>\n" +
+                            "                                                                        <td width=\"100%\" valign=\"top\" align=\"center\" class=\"img-block-center\">\n" +
+                            "\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
+                            "                                                                            <div><a target=\"_blank\" href=\"https://play.google.com/store/apps/details?id=com.interstellarstudios.weathershare\">\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c27674ccf29bcec2a435996.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            </div></td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                    </tr>\n" +
+                            "                                                                </tbody>\n" +
+                            "                                                                </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div style=\"text-align: center;\">Download the free App now.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td></tr>\n" +
+                            "                                    </tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table><!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_5\" id=\"Layout_5\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 20px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-2\" width=\"263\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                            <tbody>\n" +
+                            "                                                                <tr>\n" +
+                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"left\" class=\"img-block-center\">\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e366516c5d85.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    </div>\n" +
+                            "                                                                            </td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                </tr>\n" +
+                            "                                                            </tbody>\n" +
+                            "                                                        </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div>All of your locations automatically synced to the Cloud. Stored securely with Google Firebase.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td><td class=\"rnb-force-col\" width=\"263\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-last-col-2\" width=\"263\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                            <tbody>\n" +
+                            "                                                                <tr>\n" +
+                            "                                                                    <td width=\"100%\" valign=\"top\" align=\"left\" class=\"img-block-center\">\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e3662461432d.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    </div>\n" +
+                            "                                                                            </td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                </tr>\n" +
+                            "                                                            </tbody>\n" +
+                            "                                                        </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div>All of your reports on all of your devices. Share reports instantly via email and device-to-device.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td></tr>\n" +
+                            "                                    </tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table><!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <!--[if mso 15]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso 15]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_11\" id=\"Layout_11\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding: 20px;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "\n" +
+                            "                                            <td class=\"rnb-force-col img-block-center\" valign=\"top\" width=\"180\" style=\"padding-right: 20px;\">\n" +
+                            "\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-2-noborder-onright\" width=\"180\">\n" +
+                            "\n" +
+                            "\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" style=\"line-height: 0px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
+                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://weathershare.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4b80730d48fbeb3c5c753d.png\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
+                            "\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" width=\"350\" align=\"left\" class=\"rnb-last-col-2\">\n" +
+                            "\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td style=\"font-size:24px; font-family:Arial,Helvetica,sans-serif; color:#3c4858; text-align:left;\">\n" +
+                            "                                                            <span style=\"color:#3c4858; \"><strong><span style=\"font-size:18px;\">Website</span></strong></span></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://weathershare.interstellarstudios.co.uk\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://weathershare.interstellarstudios.co.uk</a><a href=\"https://noteify.interstellarstudios.co.uk/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">\u200B</a></div>\n" +
+                            "</td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "                                                </td>\n" +
+                            "\n" +
+                            "                                            </tr></tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table>\n" +
+                            "            <!--[if mso 15]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "\n" +
+                            "                <!--[if mso 15]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "            \n" +
+                            "        </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <div>\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"width:100%;\">\n" +
+                            "                <tr>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                <td valign=\"top\" width=\"590\" style=\"width:590px;\">\n" +
+                            "                <![endif]-->\n" +
+                            "                <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:100%;\" name=\"Layout_12\" id=\"Layout_12\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" align=\"center\" valign=\"top\">\n" +
+                            "                        <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-container\" bgcolor=\"#ffffff\" style=\"max-width: 100%; min-width: 100%; table-layout: fixed; background-color: rgb(255, 255, 255); border-radius: 0px; border-collapse: separate; padding-left: 20px; padding-right: 20px;\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td valign=\"top\" class=\"rnb-container-padding\" align=\"left\">\n" +
+                            "\n" +
+                            "                                    <table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"rnb-columns-container\">\n" +
+                            "                                        <tbody><tr>\n" +
+                            "                                            <td class=\"rnb-force-col\" width=\"550\" valign=\"top\" style=\"padding-right: 0px;\">\n" +
+                            "                                                <table border=\"0\" valign=\"top\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" class=\"rnb-col-1\" width=\"550\">\n" +
+                            "                                                    <tbody><tr>\n" +
+                            "                                                        <td width=\"100%\" class=\"img-block-center\" valign=\"top\" align=\"center\">\n" +
+                            "                                                            <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                <tbody>\n" +
+                            "                                                                    <tr>\n" +
+                            "                                                                        <td width=\"100%\" valign=\"top\" align=\"center\" class=\"img-block-center\">\n" +
+                            "\n" +
+                            "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
+                            "                                                                            <tbody><tr>\n" +
+                            "                                                                                <td>\n" +
+                            "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
+                            "                                                                            <div><a target=\"_blank\" href=\"https://github.com/craigspicer\">\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd3fccc27351d028e2b7a1b.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            </div></td>\n" +
+                            "                                                                            </tr>\n" +
+                            "                                                                        </tbody></table>\n" +
+                            "\n" +
+                            "                                                                    </td>\n" +
+                            "                                                                    </tr>\n" +
+                            "                                                                </tbody>\n" +
+                            "                                                                </table></td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                                                    </tr><tr>\n" +
+                            "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
+                            "                                                            <div><div style=\"text-align: center;\">© 2019 WeatherShare. All Rights Reserved.</div>\n" +
+                            "</div>\n" +
+                            "                                                        </td>\n" +
+                            "                                                    </tr>\n" +
+                            "                                                    </tbody></table>\n" +
+                            "\n" +
+                            "                                                </td></tr>\n" +
+                            "                                    </tbody></table></td>\n" +
+                            "                            </tr>\n" +
+                            "                            <tr>\n" +
+                            "                                <td height=\"20\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table><!--[if mso]>\n" +
+                            "                </td>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "                <!--[if mso]>\n" +
+                            "                </tr>\n" +
+                            "                </table>\n" +
+                            "                <![endif]-->\n" +
+                            "                \n" +
+                            "            </div></td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
+                            "            <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_4701\" id=\"Layout_4701\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width:590px;\">\n" +
+                            "                        <table width=\"100%\" cellpadding=\"0\" border=\"0\" height=\"38\" cellspacing=\"0\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td valign=\"top\" height=\"38\">\n" +
+                            "                                    <img width=\"20\" height=\"38\" style=\"display:block; max-height:38px; max-width:20px;\" alt=\"\" src=\"http://img.mailinblue.com/new_images/rnb/rnb_space.gif\">\n" +
+                            "                                </td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table>\n" +
+                            "            </td>\n" +
+                            "    </tr></tbody></table>\n" +
+                            "            <!--[if gte mso 9]>\n" +
+                            "                        </td>\n" +
+                            "                        </tr>\n" +
+                            "                        </table>\n" +
+                            "                        <![endif]-->\n" +
+                            "                        </td>\n" +
+                            "        </tr>\n" +
+                            "        </tbody></table>\n" +
+                            "\n" +
+                            "</body></html>");
+                    try {
+                        CreateSmtpEmail result = apiInstance.sendTransacEmail(sendSmtpEmail);
+                    } catch (ApiException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 }

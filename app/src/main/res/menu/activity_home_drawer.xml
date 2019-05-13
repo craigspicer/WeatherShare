@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item
-        android:id="@+id/nav_home_location"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location2"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location3"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location4"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location5"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location6"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location7"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location8"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location9"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location10"
-        android:title="" />
-    <item
-        android:id="@+id/nav_location11"
-        android:title="" />
+    <group android:id="@+id/menu_home_location">
+        <item
+            android:id="@+id/nav_home_location"
+            android:icon="@drawable/ic_home"
+            android:title="" />
+    </group>
+
+    <group android:id="@+id/menu_favourite_locations">
+        <item
+            android:id="@+id/favourite_location1"
+            android:icon="@drawable/ic_favourite"
+            android:title="" />
+        <item
+            android:id="@+id/favourite_location2"
+            android:icon="@drawable/ic_favourite"
+            android:title="" />
+        <item
+            android:id="@+id/favourite_location3"
+            android:icon="@drawable/ic_favourite"
+            android:title="" />
+        <item
+            android:id="@+id/favourite_location4"
+            android:icon="@drawable/ic_favourite"
+            android:title="" />
+        <item
+            android:id="@+id/favourite_location5"
+            android:icon="@drawable/ic_favourite"
+            android:title="" />
+    </group>
+
+    <group android:id="@+id/tools">
+        <item
+            android:id="@+id/account"
+            android:icon="@drawable/ic_account"
+            android:title="Account" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+    </group>
 
 </menu>

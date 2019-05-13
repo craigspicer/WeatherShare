@@ -30,7 +30,8 @@
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ForgotPassword"
             android:screenOrientation="portrait"
@@ -58,10 +59,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".Share"
-            android:label=""
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".PrivacyPolicy"
             android:label="Privacy Policy"
             android:theme="@style/AppTheme" />
@@ -77,14 +74,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".DeleteConfirm"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ForecastTimes"
-            android:label="@string/title_activity_home"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".WeatherForecast"
-            android:label=""
             android:screenOrientation="portrait" />
         <activity
             android:name=".ViewShared"

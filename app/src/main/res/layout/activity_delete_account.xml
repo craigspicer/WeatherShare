@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/clear"
+    android:background="@mipmap/clouds"
     tools:context=".DeleteAccount">
 
     <EditText
@@ -20,7 +20,7 @@
         android:padding="16dp"
         android:textColor="@color/colorLight"
         android:textColorHint="@color/colorLight"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:backgroundTint="@color/colorLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -40,7 +40,7 @@
         android:padding="15dp"
         android:textColor="@color/colorLight"
         android:textColorHint="@color/colorLight"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:backgroundTint="@color/colorLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -49,8 +49,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

@@ -6,7 +6,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/clear">
+    android:background="@mipmap/clouds">
 
     <TextView
         android:id="@+id/member_since"
@@ -51,7 +51,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="3dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/colorAccent"
+        android:background="@color/colorPrimaryDark"
         android:text="@string/fui_terms_of_service"
         android:textAllCaps="false"
         android:textColor="@color/colorLight"
@@ -66,7 +66,7 @@
         android:layout_marginStart="3dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/colorAccent"
+        android:background="@color/colorPrimaryDark"
         android:text="Privacy Policy"
         android:textAllCaps="false"
         android:textColor="@color/colorLight"

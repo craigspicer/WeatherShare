@@ -22,7 +22,7 @@
             android:id="@+id/container2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/clear">
+            android:background="@mipmap/clouds">
 
             <EditText
                 android:id="@+id/email_address"
@@ -168,7 +168,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register_button_text"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/register_button"
         app:layout_constraintEnd_toEndOf="@+id/register_button"

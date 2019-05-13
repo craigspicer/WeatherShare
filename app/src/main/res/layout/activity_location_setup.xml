@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/clear">
+    android:background="@mipmap/clouds">
 
     <EditText
         android:id="@+id/home_location"
@@ -18,7 +18,7 @@
         android:padding="16dp"
         android:textColor="@color/colorLight"
         android:textColorHint="@color/colorLight"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:backgroundTint="@color/colorLight"
         app:layout_constraintBottom_toTopOf="@+id/submit"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/submit_button_text"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/submit"
         app:layout_constraintEnd_toEndOf="@+id/submit"
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:text="Enter Your Home Location"
         android:textColor="@color/colorLight"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/home_location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

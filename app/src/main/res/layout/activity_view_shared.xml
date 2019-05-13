@@ -168,20 +168,20 @@
                 android:id="@+id/sunsetImage"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="56dp"
+                android:layout_marginTop="48dp"
                 app:layout_constraintEnd_toEndOf="@+id/sunsetText"
                 app:layout_constraintStart_toStartOf="@+id/sunsetText"
-                app:layout_constraintTop_toBottomOf="@+id/windSpeedText"
+                app:layout_constraintTop_toBottomOf="@+id/indexUVtext"
                 app:srcCompat="@drawable/sunset_icon" />
 
             <ImageView
                 android:id="@+id/sunriseImage"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="56dp"
+                android:layout_marginTop="48dp"
                 app:layout_constraintEnd_toEndOf="@+id/sunriseText"
                 app:layout_constraintStart_toStartOf="@+id/sunriseText"
-                app:layout_constraintTop_toBottomOf="@+id/pressureText"
+                app:layout_constraintTop_toBottomOf="@+id/indexUVtext"
                 app:srcCompat="@drawable/sunrise_icon" />
 
             <TextView
@@ -244,6 +244,19 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sunriseText" />
+
+            <TextView
+                android:id="@+id/indexUVtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="56dp"
+                android:textColor="@color/colorLight"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pressureText" />
 
             <TextView
                 android:id="@+id/day1"

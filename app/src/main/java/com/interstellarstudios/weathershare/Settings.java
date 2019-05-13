@@ -86,7 +86,7 @@ public class Settings extends AppCompatActivity {
                         HomeLocationModel homeLocationModel = document.toObject(HomeLocationModel.class);
                         String location = homeLocationModel.getHomeLocation();
 
-                        mHomeLocationText.setHint(location);
+                        mHomeLocationText.setText(location);
                     }
                 }
             }

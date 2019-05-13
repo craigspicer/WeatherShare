@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.GravityCompat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -68,6 +67,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private TextView mWindDegreesText;
     private TextView mSunriseText;
     private TextView mSunsetText;
+    private TextView mIndexUV;
     private TextView mDay1Text;
     private TextView mDay2Text;
     private TextView mDay3Text;
@@ -140,6 +140,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         mWindDegreesText = findViewById(R.id.windDegreesText);
         mSunriseText = findViewById(R.id.sunriseText);
         mSunsetText = findViewById(R.id.sunsetText);
+        mIndexUV = findViewById(R.id.indexUVtext);
         mProgressDialog = new ProgressDialog(this);
 
         mDay1Text = findViewById(R.id.day1);
@@ -331,7 +332,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return true;
     }
 
-    public void findWeather(String city) {
+    private void findWeather(String city) {
 
         String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
         String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
@@ -349,6 +350,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    //coord object
+                    JSONObject coordObject = response.getJSONObject("coord");
+                    String latitude = String.valueOf(coordObject.getString("lat"));
+                    String longitude = String.valueOf(coordObject.getInt("lon"));
+
+                    findIndexUV(latitude, longitude);
+
                     //sys object
                     JSONObject sysObject = response.getJSONObject("sys");
                     String country = String.valueOf(sysObject.getString("country"));
@@ -482,6 +490,45 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         queue.add(jor);
     }
 
+    private void findIndexUV(String latitude, String longitude) {
+
+        String BASE_URL = "https://api.openweathermap.org/data/2.5/uvi?";
+        String API_KEY = "appid=157187733bb90119ccc38f4d8d1f6da7";
+        String LAT_LON = "&lat=" + latitude + "&lon=" + longitude;
+        String FINAL_URL = BASE_URL + API_KEY + LAT_LON;
+
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, FINAL_URL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    double indexUV = response.getDouble("value");
+
+                    if (indexUV >= 0 && indexUV <= 2){
+                        mIndexUV.setText("UV Index: Low");
+                    } else if (indexUV >= 3 && indexUV <= 5) {
+                        mIndexUV.setText("UV Index: Moderate");
+                    } else if (indexUV >= 6 && indexUV <= 7) {
+                        mIndexUV.setText("UV Index: High");
+                    } else if (indexUV >= 8 && indexUV <= 10) {
+                        mIndexUV.setText("UV Index: Very High");
+                    } else {
+                        mIndexUV.setText("UV Index: Extreme");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(Home.this);
+        queue.add(jor);
+    }
+
     private void findForecast(String city) {
 
         String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?q=";
@@ -506,7 +553,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     JSONArray listArray = response.getJSONArray("list");
 
                     //index 0 of the list array
-                    JSONObject arrayObject0 = listArray.getJSONObject(11);
+                    JSONObject arrayObject0 = listArray.getJSONObject(7);
 
                     //date time
                     String dateTime0 = arrayObject0.getString("dt");
@@ -533,7 +580,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String temperatureForecastImperial0 = (tempForecast0 + "°F");
 
                     //index 1 of the list array
-                    JSONObject arrayObject1 = listArray.getJSONObject(18);
+                    JSONObject arrayObject1 = listArray.getJSONObject(15);
 
                     //date time
                     String dateTime1 = arrayObject1.getString("dt");
@@ -559,7 +606,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String temperatureForecastMetric1 = (tempForecast1 + "°C");
                     String temperatureForecastImperial1 = (tempForecast1 + "°F");
                     //index 2 of the list array
-                    JSONObject arrayObject2 = listArray.getJSONObject(25);
+                    JSONObject arrayObject2 = listArray.getJSONObject(23);
 
                     //date time
                     String dateTime2 = arrayObject2.getString("dt");
@@ -586,7 +633,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String temperatureForecastImperial2 = (tempForecast2 + "°F");
 
                     //index 3 of the list array
-                    JSONObject arrayObject3 = listArray.getJSONObject(32);
+                    JSONObject arrayObject3 = listArray.getJSONObject(31);
 
                     //date time
                     String dateTime3 = arrayObject3.getString("dt");
@@ -842,6 +889,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String windDirection = mWindDegreesText.getText().toString();
                     String sunrise = mSunriseText.getText().toString();
                     String sunset = mSunsetText.getText().toString();
+                    String indexUV = mIndexUV.getText().toString();
+
                     String day1 = mDay1Text.getText().toString();
                     String day2 = mDay2Text.getText().toString();
                     String day3 = mDay3Text.getText().toString();
@@ -1252,7 +1301,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                <tbody><tr>\n" +
                             "                                                                    <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\"><div><u><span style=\"font-size:16px;\"><strong>" + mLocationFinal + "</strong></span></u></div>\n" +
                             "\n" +
-                            "<div><em><span style=\"font-size:16px;\">" + description + "</span></em></div>\n" +
+                            "<div><span style=\"font-size:16px;\">" + description + "</span></div>\n" +
                             "\n" +
                             "<div><br>\n" +
                             "Current Temperature: " + temperature + "</div>\n" +
@@ -1272,6 +1321,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "<div>Sunrise Time: " + sunrise + "</div>\n" +
                             "\n" +
                             "<div>Sunset Time: " + sunset + "</div>\n" +
+                            "\n" +
+                            "<div>" + indexUV + "</div>\n" +
                             "\n" +
                             "<div>&nbsp;</div>\n" +
                             "\n" +

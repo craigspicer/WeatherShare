@@ -30,33 +30,25 @@
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ForgotPassword"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SignIn"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Register"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Account"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".Welcome"
-            android:screenOrientation="portrait" />
+        <activity android:name=".Welcome" />
         <activity
             android:name=".LocationSetup"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Settings"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".PrivacyPolicy"
@@ -75,9 +67,7 @@
         <activity
             android:name=".DeleteConfirm"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ViewShared"
-            android:screenOrientation="portrait">
+        <activity android:name=".ViewShared">
             <intent-filter>
                 <action android:name="com.interstellarstudios.weathershare.FirebasePushNotifications.TARGETNOTIFICATION" />
 

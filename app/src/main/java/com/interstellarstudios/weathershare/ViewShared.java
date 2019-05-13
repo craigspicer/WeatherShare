@@ -39,6 +39,7 @@ public class ViewShared extends AppCompatActivity {
     private TextView mWindDegreesText;
     private TextView mSunriseText;
     private TextView mSunsetText;
+    private TextView mIndexUV;
     private TextView mDay1Text;
     private TextView mDay2Text;
     private TextView mDay3Text;
@@ -85,6 +86,7 @@ public class ViewShared extends AppCompatActivity {
         mWindDegreesText = findViewById(R.id.windDegreesText);
         mSunriseText = findViewById(R.id.sunriseText);
         mSunsetText = findViewById(R.id.sunsetText);
+        mIndexUV = findViewById(R.id.indexUVtext);
         mProgressDialog = new ProgressDialog(this);
 
         mDay1Text = findViewById(R.id.day1);
@@ -125,7 +127,7 @@ public class ViewShared extends AppCompatActivity {
         });
     }
 
-    public void findWeather(String city) {
+    private void findWeather(String city) {
 
         String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
         String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
@@ -143,6 +145,13 @@ public class ViewShared extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    //coord object
+                    JSONObject coordObject = response.getJSONObject("coord");
+                    String latitude = String.valueOf(coordObject.getString("lat"));
+                    String longitude = String.valueOf(coordObject.getInt("lon"));
+
+                    findIndexUV(latitude, longitude);
+
                     //sys object
                     JSONObject sysObject = response.getJSONObject("sys");
                     String country = String.valueOf(sysObject.getString("country"));
@@ -275,6 +284,45 @@ public class ViewShared extends AppCompatActivity {
         queue.add(jor);
     }
 
+    private void findIndexUV(String latitude, String longitude) {
+
+        String BASE_URL = "https://api.openweathermap.org/data/2.5/uvi?";
+        String API_KEY = "appid=157187733bb90119ccc38f4d8d1f6da7";
+        String LAT_LON = "&lat=" + latitude + "&lon=" + longitude;
+        String FINAL_URL = BASE_URL + API_KEY + LAT_LON;
+
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, FINAL_URL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    double indexUV = response.getDouble("value");
+
+                    if (indexUV >= 0 && indexUV <= 2){
+                        mIndexUV.setText("UV Index: Low");
+                    } else if (indexUV >= 3 && indexUV <= 5) {
+                        mIndexUV.setText("UV Index: Moderate");
+                    } else if (indexUV >= 6 && indexUV <= 7) {
+                        mIndexUV.setText("UV Index: High");
+                    } else if (indexUV >= 8 && indexUV <= 10) {
+                        mIndexUV.setText("UV Index: Very High");
+                    } else {
+                        mIndexUV.setText("UV Index: Extreme");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(ViewShared.this);
+        queue.add(jor);
+    }
+
     private void findForecast(String city) {
 
         String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?q=";
@@ -299,7 +347,7 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray listArray = response.getJSONArray("list");
 
                     //index 0 of the list array
-                    JSONObject arrayObject0 = listArray.getJSONObject(11);
+                    JSONObject arrayObject0 = listArray.getJSONObject(7);
 
                     //date time
                     String dateTime0 = arrayObject0.getString("dt");
@@ -326,7 +374,7 @@ public class ViewShared extends AppCompatActivity {
                     String temperatureForecastImperial0 = (tempForecast0 + "°F");
 
                     //index 1 of the list array
-                    JSONObject arrayObject1 = listArray.getJSONObject(18);
+                    JSONObject arrayObject1 = listArray.getJSONObject(15);
 
                     //date time
                     String dateTime1 = arrayObject1.getString("dt");
@@ -352,7 +400,7 @@ public class ViewShared extends AppCompatActivity {
                     String temperatureForecastMetric1 = (tempForecast1 + "°C");
                     String temperatureForecastImperial1 = (tempForecast1 + "°F");
                     //index 2 of the list array
-                    JSONObject arrayObject2 = listArray.getJSONObject(25);
+                    JSONObject arrayObject2 = listArray.getJSONObject(23);
 
                     //date time
                     String dateTime2 = arrayObject2.getString("dt");
@@ -379,7 +427,7 @@ public class ViewShared extends AppCompatActivity {
                     String temperatureForecastImperial2 = (tempForecast2 + "°F");
 
                     //index 3 of the list array
-                    JSONObject arrayObject3 = listArray.getJSONObject(32);
+                    JSONObject arrayObject3 = listArray.getJSONObject(31);
 
                     //date time
                     String dateTime3 = arrayObject3.getString("dt");

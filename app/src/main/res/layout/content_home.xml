@@ -303,7 +303,6 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="64dp"
                 android:text="5 Day Forecast"
                 android:textColor="@color/colorLight"
@@ -371,7 +370,7 @@
                 android:textColor="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/day1"
                 app:layout_constraintEnd_toStartOf="@+id/tempForecast1"
-                app:layout_constraintStart_toEndOf="@+id/day1"
+                app:layout_constraintStart_toEndOf="@+id/day1Icon"
                 app:layout_constraintTop_toTopOf="@+id/day1" />
 
             <TextView
@@ -391,7 +390,7 @@
                 android:textColor="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/day2"
                 app:layout_constraintEnd_toStartOf="@+id/tempForecast2"
-                app:layout_constraintStart_toEndOf="@+id/day2"
+                app:layout_constraintStart_toEndOf="@+id/day2Icon"
                 app:layout_constraintTop_toTopOf="@+id/day2" />
 
             <TextView
@@ -411,7 +410,7 @@
                 android:textColor="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/day3"
                 app:layout_constraintEnd_toStartOf="@+id/tempForecast3"
-                app:layout_constraintStart_toEndOf="@+id/day3"
+                app:layout_constraintStart_toEndOf="@+id/day3Icon"
                 app:layout_constraintTop_toTopOf="@+id/day3" />
 
             <TextView
@@ -431,7 +430,7 @@
                 android:textColor="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/day4"
                 app:layout_constraintEnd_toStartOf="@+id/tempForecast4"
-                app:layout_constraintStart_toEndOf="@+id/day4"
+                app:layout_constraintStart_toEndOf="@+id/day4Icon"
                 app:layout_constraintTop_toTopOf="@+id/day4" />
 
             <TextView
@@ -451,7 +450,7 @@
                 android:textColor="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/day5"
                 app:layout_constraintEnd_toStartOf="@+id/tempForecast5"
-                app:layout_constraintStart_toEndOf="@+id/day5"
+                app:layout_constraintStart_toEndOf="@+id/day5Icon"
                 app:layout_constraintTop_toTopOf="@+id/day5" />
 
             <TextView
@@ -464,11 +463,61 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/description5" />
 
+            <ImageView
+                android:id="@+id/day1Icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/day1"
+                app:layout_constraintStart_toEndOf="@+id/day1"
+                app:layout_constraintTop_toTopOf="@+id/day1"
+                app:srcCompat="@color/colorPrimary" />
+
+            <ImageView
+                android:id="@+id/day2Icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/day2"
+                app:layout_constraintStart_toEndOf="@+id/day2"
+                app:layout_constraintTop_toTopOf="@+id/day2"
+                app:srcCompat="@color/colorPrimary" />
+
+            <ImageView
+                android:id="@+id/day3Icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/day3"
+                app:layout_constraintStart_toEndOf="@+id/day3"
+                app:layout_constraintTop_toTopOf="@+id/day3"
+                app:srcCompat="@color/colorPrimary" />
+
+            <ImageView
+                android:id="@+id/day4Icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/day4"
+                app:layout_constraintStart_toEndOf="@+id/day4"
+                app:layout_constraintTop_toTopOf="@+id/day4"
+                app:srcCompat="@color/colorPrimary" />
+
+            <ImageView
+                android:id="@+id/day5Icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/day5"
+                app:layout_constraintStart_toEndOf="@+id/day5"
+                app:layout_constraintTop_toTopOf="@+id/day5"
+                app:srcCompat="@color/colorPrimary" />
+
             <TextView
                 android:id="@+id/dummy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:textColor="@color/colorLight"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

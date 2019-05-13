@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -312,6 +313,8 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray weatherArray0 = arrayObject0.getJSONArray("weather");
                     JSONObject weatherObject0 = weatherArray0.getJSONObject(0);
                     String description0 = weatherObject0.getString("description");
+                    String forecastId0 = weatherObject0.getString("id");
+                    int forecastIdInt0 = Integer.parseInt(forecastId0);
 
                     //converting dt
                     int dateTimeInt0 = Integer.parseInt(dateTime0);
@@ -337,6 +340,8 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray weatherArray1 = arrayObject1.getJSONArray("weather");
                     JSONObject weatherObject1 = weatherArray1.getJSONObject(0);
                     String description1 = weatherObject1.getString("description");
+                    String forecastId1 = weatherObject1.getString("id");
+                    int forecastIdInt1 = Integer.parseInt(forecastId1);
 
                     //converting dt
                     int dateTimeInt1 = Integer.parseInt(dateTime1);
@@ -361,6 +366,8 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray weatherArray2 = arrayObject2.getJSONArray("weather");
                     JSONObject weatherObject2 = weatherArray2.getJSONObject(0);
                     String description2 = weatherObject2.getString("description");
+                    String forecastId2 = weatherObject2.getString("id");
+                    int forecastIdInt2 = Integer.parseInt(forecastId2);
 
                     //converting dt
                     int dateTimeInt2 = Integer.parseInt(dateTime2);
@@ -386,6 +393,8 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray weatherArray3 = arrayObject3.getJSONArray("weather");
                     JSONObject weatherObject3 = weatherArray3.getJSONObject(0);
                     String description3 = weatherObject3.getString("description");
+                    String forecastId3 = weatherObject3.getString("id");
+                    int forecastIdInt3 = Integer.parseInt(forecastId3);
 
                     //converting dt
                     int dateTimeInt3 = Integer.parseInt(dateTime3);
@@ -411,6 +420,8 @@ public class ViewShared extends AppCompatActivity {
                     JSONArray weatherArray4 = arrayObject4.getJSONArray("weather");
                     JSONObject weatherObject4 = weatherArray4.getJSONObject(0);
                     String description4 = weatherObject4.getString("description");
+                    String forecastId4 = weatherObject4.getString("id");
+                    int forecastIdInt4 = Integer.parseInt(forecastId4);
 
                     //converting dt
                     int dateTimeInt4 = Integer.parseInt(dateTime4);
@@ -422,16 +433,116 @@ public class ViewShared extends AppCompatActivity {
                     String temperatureForecastMetric4 = (tempForecast4 + "°C");
                     String temperatureForecastImperial4 = (tempForecast4 + "°F");
 
+                    //change forecast icon
+                    ImageView day1Icon = findViewById(R.id.day1Icon);
+                    if (forecastIdInt0 >= 200 && forecastIdInt0 <= 232) {
+                        day1Icon.setImageResource(R.drawable.icon_thunderstorm);
+                    } else if (forecastIdInt0 >= 300 && forecastIdInt0 <= 321) {
+                        day1Icon.setImageResource(R.drawable.icon_drizzle);
+                    } else if (forecastIdInt0 >= 500 && forecastIdInt0 <= 531) {
+                        day1Icon.setImageResource(R.drawable.icon_rain);
+                    } else if (forecastIdInt0 >= 600 && forecastIdInt0 <= 622) {
+                        day1Icon.setImageResource(R.drawable.icon_snow);
+                    } else if (forecastIdInt0 >= 701 && forecastIdInt0 <= 781) {
+                        day1Icon.setImageResource(R.drawable.icon_mist);
+                    } else if (forecastIdInt0 == 800) {
+                        day1Icon.setImageResource(R.drawable.icon_clear);
+                    } else if (forecastIdInt0 >= 801 && forecastIdInt0 <= 803) {
+                        day1Icon.setImageResource(R.drawable.icon_clouds);
+                    } else if (forecastIdInt0 == 804) {
+                        day1Icon.setImageResource(R.drawable.icon_overcast);
+                    }
+
+                    //change forecast icon
+                    ImageView day2Icon = findViewById(R.id.day2Icon);
+                    if (forecastIdInt1 >= 200 && forecastIdInt1 <= 232) {
+                        day2Icon.setImageResource(R.drawable.icon_thunderstorm);
+                    } else if (forecastIdInt1 >= 300 && forecastIdInt1 <= 321) {
+                        day2Icon.setImageResource(R.drawable.icon_drizzle);
+                    } else if (forecastIdInt1 >= 500 && forecastIdInt1 <= 531) {
+                        day2Icon.setImageResource(R.drawable.icon_rain);
+                    } else if (forecastIdInt1 >= 600 && forecastIdInt1 <= 622) {
+                        day2Icon.setImageResource(R.drawable.icon_snow);
+                    } else if (forecastIdInt1 >= 701 && forecastIdInt1 <= 781) {
+                        day2Icon.setImageResource(R.drawable.icon_mist);
+                    } else if (forecastIdInt1 == 800) {
+                        day2Icon.setImageResource(R.drawable.icon_clear);
+                    } else if (forecastIdInt1 >= 801 && forecastIdInt1 <= 803) {
+                        day2Icon.setImageResource(R.drawable.icon_clouds);
+                    } else if (forecastIdInt1 == 804) {
+                        day2Icon.setImageResource(R.drawable.icon_overcast);
+                    }
+
+                    //change forecast icon
+                    ImageView day3Icon = findViewById(R.id.day3Icon);
+                    if (forecastIdInt2 >= 200 && forecastIdInt2 <= 232) {
+                        day3Icon.setImageResource(R.drawable.icon_thunderstorm);
+                    } else if (forecastIdInt2 >= 300 && forecastIdInt2 <= 321) {
+                        day3Icon.setImageResource(R.drawable.icon_drizzle);
+                    } else if (forecastIdInt2 >= 500 && forecastIdInt2 <= 531) {
+                        day3Icon.setImageResource(R.drawable.icon_rain);
+                    } else if (forecastIdInt2 >= 600 && forecastIdInt2 <= 622) {
+                        day3Icon.setImageResource(R.drawable.icon_snow);
+                    } else if (forecastIdInt2 >= 701 && forecastIdInt2 <= 781) {
+                        day3Icon.setImageResource(R.drawable.icon_mist);
+                    } else if (forecastIdInt2 == 800) {
+                        day3Icon.setImageResource(R.drawable.icon_clear);
+                    } else if (forecastIdInt2 >= 801 && forecastIdInt2 <= 803) {
+                        day3Icon.setImageResource(R.drawable.icon_clouds);
+                    } else if (forecastIdInt2 == 804) {
+                        day3Icon.setImageResource(R.drawable.icon_overcast);
+                    }
+
+                    //change forecast icon
+                    ImageView day4Icon = findViewById(R.id.day4Icon);
+                    if (forecastIdInt3 >= 200 && forecastIdInt3 <= 232) {
+                        day4Icon.setImageResource(R.drawable.icon_thunderstorm);
+                    } else if (forecastIdInt3 >= 300 && forecastIdInt3 <= 321) {
+                        day4Icon.setImageResource(R.drawable.icon_drizzle);
+                    } else if (forecastIdInt3 >= 500 && forecastIdInt3 <= 531) {
+                        day4Icon.setImageResource(R.drawable.icon_rain);
+                    } else if (forecastIdInt3 >= 600 && forecastIdInt3 <= 622) {
+                        day4Icon.setImageResource(R.drawable.icon_snow);
+                    } else if (forecastIdInt3 >= 701 && forecastIdInt3 <= 781) {
+                        day4Icon.setImageResource(R.drawable.icon_mist);
+                    } else if (forecastIdInt3 == 800) {
+                        day4Icon.setImageResource(R.drawable.icon_clear);
+                    } else if (forecastIdInt3 >= 801 && forecastIdInt3 <= 803) {
+                        day4Icon.setImageResource(R.drawable.icon_clouds);
+                    } else if (forecastIdInt3 == 804) {
+                        day4Icon.setImageResource(R.drawable.icon_overcast);
+                    }
+
+                    //change forecast icon
+                    ImageView day5Icon = findViewById(R.id.day5Icon);
+                    if (forecastIdInt4 >= 200 && forecastIdInt4 <= 232) {
+                        day5Icon.setImageResource(R.drawable.icon_thunderstorm);
+                    } else if (forecastIdInt4 >= 300 && forecastIdInt4 <= 321) {
+                        day5Icon.setImageResource(R.drawable.icon_drizzle);
+                    } else if (forecastIdInt4 >= 500 && forecastIdInt4 <= 531) {
+                        day5Icon.setImageResource(R.drawable.icon_rain);
+                    } else if (forecastIdInt4 >= 600 && forecastIdInt4 <= 622) {
+                        day5Icon.setImageResource(R.drawable.icon_snow);
+                    } else if (forecastIdInt4 >= 701 && forecastIdInt4 <= 781) {
+                        day5Icon.setImageResource(R.drawable.icon_mist);
+                    } else if (forecastIdInt4 == 800) {
+                        day5Icon.setImageResource(R.drawable.icon_clear);
+                    } else if (forecastIdInt4 >= 801 && forecastIdInt4 <= 803) {
+                        day5Icon.setImageResource(R.drawable.icon_clouds);
+                    } else if (forecastIdInt4 == 804) {
+                        day5Icon.setImageResource(R.drawable.icon_overcast);
+                    }
+
                     mDay1Text.setText(dateTimeFinal0);
                     mDay2Text.setText(dateTimeFinal1);
                     mDay3Text.setText(dateTimeFinal2);
                     mDay4Text.setText(dateTimeFinal3);
                     mDay5Text.setText(dateTimeFinal4);
-                    mDescription1Text.setText(description0);
-                    mDescription2Text.setText(description1);
-                    mDescription3Text.setText(description2);
-                    mDescription4Text.setText(description3);
-                    mDescription5Text.setText(description4);
+                    mDescription1Text.setText(description0.toUpperCase());
+                    mDescription2Text.setText(description1.toUpperCase());
+                    mDescription3Text.setText(description2.toUpperCase());
+                    mDescription4Text.setText(description3.toUpperCase());
+                    mDescription5Text.setText(description4.toUpperCase());
 
                     if (mSwitchOnOff) {
                         mTempForecast1.setText(temperatureForecastImperial0);

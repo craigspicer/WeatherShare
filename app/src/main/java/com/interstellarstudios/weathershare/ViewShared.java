@@ -230,7 +230,6 @@ public class ViewShared extends AppCompatActivity {
                     }
 
                     //final strings
-                    String locationFinal = (city + ", " + country);
                     String humidityFinal = (humidity + "%");
                     String PressureFinal = (pressure + "hPa");
                     String windSpeedFinalMetric = (windSpeed + "kph");
@@ -243,7 +242,7 @@ public class ViewShared extends AppCompatActivity {
                     String temperatureMaxFinalImperial = (tempMax + "°F");
 
                     //set views
-                    mLocationText.setText(locationFinal);
+                    mLocationText.setText(mLocation);
                     mDescriptionText.setText(description);
                     mHumidityText.setText(humidityFinal);
                     mPressureText.setText(PressureFinal);

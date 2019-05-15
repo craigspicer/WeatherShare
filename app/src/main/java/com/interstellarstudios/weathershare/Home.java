@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -34,24 +33,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import hotchemi.android.rate.AppRate;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
@@ -96,19 +85,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private AutoCompleteTextView mSearchField;
     private EditText mSharedUserEmailText;
     private String mSharedUserEmail;
-    private String mCurrentUserId;
     private String mHomeLocation;
     private String mLocationFinal;
     private String mSearchLocation;
-    private String mSharedUserId;
-    private String mCurrentUserEmail;
     private String mFavouriteLocation1;
     private String mFavouriteLocation2;
     private String mFavouriteLocation3;
     private String mFavouriteLocation4;
     private String mFavouriteLocation5;
     private Boolean mSwitchOnOff;
-    private FirebaseFirestore mFireBaseFireStore;
     private FirebaseAnalytics mFireBaseAnalytics;
     private ProgressDialog mProgressDialog;
 
@@ -131,16 +116,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         mSwitchOnOff = sharedPreferences.getBoolean("switchUnits", false);
+        mHomeLocation = sharedPreferences.getString("homeLocation", "");
+        mFavouriteLocation1 = sharedPreferences.getString("favouriteLocation1", "");
+        mFavouriteLocation2 = sharedPreferences.getString("favouriteLocation2", "");
+        mFavouriteLocation3 = sharedPreferences.getString("favouriteLocation3", "");
+        mFavouriteLocation4 = sharedPreferences.getString("favouriteLocation4", "");
+        mFavouriteLocation5 = sharedPreferences.getString("favouriteLocation5", "");
 
-        FirebaseAuth mFireBaseAuth = FirebaseAuth.getInstance();
-        mFireBaseFireStore = FirebaseFirestore.getInstance();
         mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        if (mFireBaseAuth.getCurrentUser() != null) {
-            mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
-            FirebaseUser firebaseUser = mFireBaseAuth.getCurrentUser();
-            mCurrentUserEmail = firebaseUser.getEmail();
-        }
+        final Bundle analyticsBundle = new Bundle();
 
         mSharedUserEmailText = findViewById(R.id.shared_user_email);
         mTemperatureText = findViewById(R.id.temperatureText);
@@ -233,8 +217,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         shareIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareWeather();
                 sendMail();
+                Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
+                mFireBaseAnalytics.logEvent("weather_report_emailed", analyticsBundle);
             }
         });
 
@@ -245,8 +230,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-                            shareWeather();
                             sendMail();
+                            Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
+                            mFireBaseAnalytics.logEvent("weather_report_emailed", analyticsBundle);
                             return true;
                         default:
                             break;
@@ -257,6 +243,18 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         });
 
         final Menu menu = navigationView.getMenu();
+        MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
+        navHomeLocation.setTitle(mHomeLocation);
+        MenuItem favourite_location1 = menu.findItem(R.id.favourite_location1);
+        favourite_location1.setTitle(mFavouriteLocation1);
+        MenuItem favourite_location2 = menu.findItem(R.id.favourite_location2);
+        favourite_location2.setTitle(mFavouriteLocation2);
+        MenuItem favourite_location3 = menu.findItem(R.id.favourite_location3);
+        favourite_location3.setTitle(mFavouriteLocation3);
+        MenuItem favourite_location4 = menu.findItem(R.id.favourite_location4);
+        favourite_location4.setTitle(mFavouriteLocation4);
+        MenuItem favourite_location5 = menu.findItem(R.id.favourite_location5);
+        favourite_location5.setTitle(mFavouriteLocation5);
 
         mProgressDialog.setMessage("Refreshing");
         mProgressDialog.show();
@@ -264,6 +262,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         GPStracker gpsTracker = new GPStracker(getApplicationContext());
         Location location = gpsTracker.getLocation();
         if (location != null) {
+
             double latitudeDouble = location.getLatitude();
             double longitudeDouble = location.getLongitude();
             String latitude = Double.toString(latitudeDouble);
@@ -274,76 +273,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         } else {
 
-            DocumentReference homeLocationRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Home_Location");
-            homeLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-
-                            HomeLocationModel homeLocationModel = document.toObject(HomeLocationModel.class);
-                            mHomeLocation = homeLocationModel.getHomeLocation();
-
-                            MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
-                            navHomeLocation.setTitle(mHomeLocation);
-
-                            findWeather(mHomeLocation, "", "");
-                            findForecast(mHomeLocation, "", "");
-                        }
-                    }
-                }
-            });
-
+            findWeather(mHomeLocation, "", "");
+            findForecast(mHomeLocation, "", "");
         }
-
-        DocumentReference homeLocationRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Home_Location");
-        homeLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        HomeLocationModel homeLocationModel = document.toObject(HomeLocationModel.class);
-                        mHomeLocation = homeLocationModel.getHomeLocation();
-
-                        MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
-                        navHomeLocation.setTitle(mHomeLocation);
-                    }
-                }
-            }
-        });
-
-        DocumentReference favouriteLocationsRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Favourite_Locations");
-        favouriteLocationsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        FavouriteLocationModel favouriteLocationModel = document.toObject(FavouriteLocationModel.class);
-                        mFavouriteLocation1 = favouriteLocationModel.getFavouriteLocation1();
-                        mFavouriteLocation2 = favouriteLocationModel.getFavouriteLocation2();
-                        mFavouriteLocation3 = favouriteLocationModel.getFavouriteLocation3();
-                        mFavouriteLocation4 = favouriteLocationModel.getFavouriteLocation4();
-                        mFavouriteLocation5 = favouriteLocationModel.getFavouriteLocation5();
-
-                        MenuItem favourite_location1 = menu.findItem(R.id.favourite_location1);
-                        favourite_location1.setTitle(mFavouriteLocation1);
-                        MenuItem favourite_location2 = menu.findItem(R.id.favourite_location2);
-                        favourite_location2.setTitle(mFavouriteLocation2);
-                        MenuItem favourite_location3 = menu.findItem(R.id.favourite_location3);
-                        favourite_location3.setTitle(mFavouriteLocation3);
-                        MenuItem favourite_location4 = menu.findItem(R.id.favourite_location4);
-                        favourite_location4.setTitle(mFavouriteLocation4);
-                        MenuItem favourite_location5 = menu.findItem(R.id.favourite_location5);
-                        favourite_location5.setTitle(mFavouriteLocation5);
-                    }
-                }
-            }
-        });
     }
 
     public void getPermissionToAccessLocation() {
@@ -965,47 +897,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         queue.add(jor);
     }
 
-    private void shareWeather() {
-
-        final Bundle analyticsBundle = new Bundle();
-
-        mSharedUserEmail = mSharedUserEmailText.getText().toString().trim();
-        if (mSharedUserEmail.trim().isEmpty()) {
-            return;
-        }
-
-        DocumentReference userDetailsRef = mFireBaseFireStore.collection("User_List").document(mSharedUserEmail);
-        userDetailsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        UserIdModel userDetails = document.toObject(UserIdModel.class);
-                        mSharedUserId = userDetails.getUserId();
-
-                        Map<String, Object> notificationMessage = new HashMap<>();
-                        notificationMessage.put("from", mCurrentUserEmail);
-                        CollectionReference notificationPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Notifications").collection("Notifications");
-                        notificationPath.add(notificationMessage);
-
-                        DocumentReference sharedWeatherPath = mFireBaseFireStore.collection("Users").document(mSharedUserId).collection("Public").document("Shared");
-                        sharedWeatherPath.set(new SharedWeatherModel(mLocationFinal));
-
-                        Toast.makeText(Home.this, "Weather report shared with and emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
-                        mFireBaseAnalytics.logEvent("report_shared_and_emailed", analyticsBundle);
-                    } else {
-                        Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
-                        mFireBaseAnalytics.logEvent("report_share_email_only_called", analyticsBundle);
-                    }
-                } else {
-                    Toast.makeText(Home.this, "Please ensure that there is an active network connection to share", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
     private void sendMail() {
 
         mSharedUserEmail = mSharedUserEmailText.getText().toString().trim();
@@ -1053,13 +944,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                     SmtpApi apiInstance = new SmtpApi();
 
-                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<SendSmtpEmailTo>();
+                    List<SendSmtpEmailTo> emailArrayList = new ArrayList<>();
                     emailArrayList.add(new SendSmtpEmailTo().email(mSharedUserEmail));
 
                     SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
                     sendSmtpEmail.sender(new SendSmtpEmailSender().email("weathershare@interstellarstudios.co.uk").name("WeatherShare"));
                     sendSmtpEmail.to(emailArrayList);
-                    sendSmtpEmail.subject("You've received a weather report from " + mCurrentUserEmail);
+                    sendSmtpEmail.subject("You've Received a Shared Weather Report");
                     sendSmtpEmail.htmlContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
                             "        /* Resets */\n" +
                             "        .ReadMsgBody { width: 100%; background-color: #ebebeb;}\n" +

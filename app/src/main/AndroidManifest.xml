@@ -32,21 +32,8 @@
             android:label="@string/title_activity_home"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".ForgotPassword"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".SignIn"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Register"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
             android:name=".Account"
             android:screenOrientation="portrait" />
-        <activity android:name=".Welcome" />
-        <activity
-            android:name=".LocationSetup"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Settings"
             android:windowSoftInputMode="stateHidden|adjustResize" />
@@ -61,23 +48,6 @@
         <activity
             android:name=".EditAccountDetails"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".DeleteAccount"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".DeleteConfirm"
-            android:screenOrientation="portrait" />
-        <activity android:name=".ViewShared">
-            <intent-filter>
-                <action android:name="com.interstellarstudios.weathershare.FirebasePushNotifications.TARGETNOTIFICATION" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notification" />
     </application>
 
 </manifest>

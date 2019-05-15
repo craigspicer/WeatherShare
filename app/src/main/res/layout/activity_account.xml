@@ -9,21 +9,9 @@
     android:background="@mipmap/clouds">
 
     <TextView
-        android:id="@+id/member_since"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorLight"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_email_address" />
-
-    <TextView
         android:id="@+id/user_full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:textColor="@color/colorLight"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -31,18 +19,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView9" />
-
-    <TextView
-        android:id="@+id/user_email_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="email@address.com"
-        android:textColor="@color/colorLight"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_full_name" />
 
     <Button
         android:id="@+id/terms_of_service"
@@ -52,7 +28,7 @@
         android:layout_marginEnd="3dp"
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimaryDark"
-        android:text="@string/fui_terms_of_service"
+        android:text="Terms of Service"
         android:textAllCaps="false"
         android:textColor="@color/colorLight"
         app:layout_constraintBottom_toTopOf="@+id/edit_account_button"
@@ -86,33 +62,17 @@
         app:srcCompat="@drawable/logo_words_white" />
 
     <Button
-        android:id="@+id/log_out_button"
+        android:id="@+id/edit_account_button"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@color/colorLight"
-        android:text="Log Out"
-        android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/edit_account_button"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/colorLight"
         android:text="Edit Account Details"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="@+id/log_out_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />

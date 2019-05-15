@@ -177,6 +177,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 mSearchLocation = mSearchField.getText().toString();
                 findWeather(mSearchLocation, "", "");
                 findForecast(mSearchLocation, "", "");
+                mFireBaseAnalytics.logEvent("search", analyticsBundle);
             }
         });
 
@@ -192,6 +193,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 String selectedLocation = mSearchField.getText().toString();
                 findWeather(selectedLocation, "", "");
                 findForecast(selectedLocation, "", "");
+                mFireBaseAnalytics.logEvent("search", analyticsBundle);
             }
         });
 
@@ -204,6 +206,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             mSearchLocation = mSearchField.getText().toString();
                             findWeather(mSearchLocation, "", "");
                             findForecast(mSearchLocation, "", "");
+                            mFireBaseAnalytics.logEvent("search", analyticsBundle);
                             return true;
                         default:
                             break;
@@ -311,11 +314,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        Bundle analyticsBundle = new Bundle();
         int id = item.getItemId();
 
         if (id == R.id.nav_home_location) {
             findWeather(mHomeLocation, "", "");
             findForecast(mHomeLocation, "", "");
+            mFireBaseAnalytics.logEvent("menu_home_clicked", analyticsBundle);
+
         } else if (id == R.id.nav_current_location) {
 
             GPStracker gpsTracker = new GPStracker(getApplicationContext());
@@ -328,6 +335,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                 findWeather("", latitude, longitude);
                 findForecast("", latitude, longitude);
+                mFireBaseAnalytics.logEvent("menu_current_location_clicked", analyticsBundle);
             } else {
                 Toast.makeText(Home.this, "Waiting for location. Please try again.", Toast.LENGTH_LONG).show();
             }
@@ -335,26 +343,33 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.favourite_location1) {
             findWeather(mFavouriteLocation1, "", "");
             findForecast(mFavouriteLocation1, "", "");
+            mFireBaseAnalytics.logEvent("menu_favourite1_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location2) {
             findWeather(mFavouriteLocation2, "", "");
             findForecast(mFavouriteLocation2, "", "");
+            mFireBaseAnalytics.logEvent("menu_favourite2_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location3) {
             findWeather(mFavouriteLocation3, "", "");
             findForecast(mFavouriteLocation3, "", "");
+            mFireBaseAnalytics.logEvent("menu_favourite3_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location4) {
             findWeather(mFavouriteLocation4, "", "");
             findForecast(mFavouriteLocation4, "", "");
+            mFireBaseAnalytics.logEvent("menu_favourite4_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location5) {
             findWeather(mFavouriteLocation5, "", "");
             findForecast(mFavouriteLocation5, "", "");
+            mFireBaseAnalytics.logEvent("menu_favourite5_clicked", analyticsBundle);
         } else if (id == R.id.account) {
             Intent i = new Intent(Home.this, Account.class);
             startActivity(i);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            mFireBaseAnalytics.logEvent("account_clicked", analyticsBundle);
         } else if (id == R.id.settings) {
             Intent j = new Intent(Home.this, Settings.class);
             startActivity(j);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            mFireBaseAnalytics.logEvent("settings_clicked", analyticsBundle);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

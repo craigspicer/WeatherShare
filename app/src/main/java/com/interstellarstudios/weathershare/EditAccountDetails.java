@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class EditAccountDetails extends AppCompatActivity {
 
@@ -17,11 +18,15 @@ public class EditAccountDetails extends AppCompatActivity {
     private static final String textUserLastName = "userLastName";
     private String mUserFirstName;
     private String mUserLastName;
+    private FirebaseAnalytics mFireBaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_account_details);
+
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+        final Bundle analyticsBundle = new Bundle();
 
         mFirstNameText = findViewById(R.id.editFirstName);
         mLastNameText = findViewById(R.id.editLastName);
@@ -35,6 +40,7 @@ public class EditAccountDetails extends AppCompatActivity {
                 startActivity(i);
                 overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
                 Toast.makeText(EditAccountDetails.this, "Details Saved", Toast.LENGTH_LONG).show();
+                mFireBaseAnalytics.logEvent("name_saved", analyticsBundle);
             }
         });
         loadData();

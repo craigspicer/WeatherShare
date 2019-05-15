@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class Settings extends AppCompatActivity {
 
@@ -34,6 +35,7 @@ public class Settings extends AppCompatActivity {
     private String mFavouriteLocation3;
     private String mFavouriteLocation4;
     private String mFavouriteLocation5;
+    private FirebaseAnalytics mFireBaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,9 @@ public class Settings extends AppCompatActivity {
         mFavouriteLocation5TextView.setAdapter(adapter);
         buttonSwitchUnits = findViewById(R.id.unitsSelector);
 
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+        final Bundle analyticsBundle = new Bundle();
+
         ImageView saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +72,7 @@ public class Settings extends AppCompatActivity {
                 startActivity(i);
                 overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
                 Toast.makeText(Settings.this, "Settings Saved", Toast.LENGTH_LONG).show();
+                mFireBaseAnalytics.logEvent("settings_saved", analyticsBundle);
             }
         });
         loadData();

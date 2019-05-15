@@ -1,12 +1,14 @@
 package com.interstellarstudios.weathershare;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,13 +37,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import hotchemi.android.rate.AppRate;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
@@ -110,8 +116,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         AppRate.showRateDialogIfMeetsConditions(this);
         //AppRate.with(this).showRateDialog(this);
 
-        if (ContextCompat.checkSelfPermission(Home.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            getPermissionToAccessLocation();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(Home.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                getPermissionToAccessLocation();
+            }
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
@@ -189,7 +197,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         mSearchField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedLocation = mSearchField.getText().toString();
                 findWeather(selectedLocation, "", "");
                 findForecast(selectedLocation, "", "");
@@ -281,6 +289,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     public void getPermissionToAccessLocation() {
 
         new AlertDialog.Builder(this)
@@ -360,16 +369,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             findWeather(mFavouriteLocation5, "", "");
             findForecast(mFavouriteLocation5, "", "");
             mFireBaseAnalytics.logEvent("menu_favourite5_clicked", analyticsBundle);
-        } else if (id == R.id.account) {
-            Intent i = new Intent(Home.this, Account.class);
-            startActivity(i);
-            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            mFireBaseAnalytics.logEvent("account_clicked", analyticsBundle);
         } else if (id == R.id.settings) {
             Intent j = new Intent(Home.this, Settings.class);
             startActivity(j);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             mFireBaseAnalytics.logEvent("settings_clicked", analyticsBundle);
+        } else if (id == R.id.information) {
+            Intent i = new Intent(Home.this, Account.class);
+            startActivity(i);
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            mFireBaseAnalytics.logEvent("information_clicked", analyticsBundle);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

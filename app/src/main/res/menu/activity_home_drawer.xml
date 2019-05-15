@@ -40,13 +40,13 @@
 
     <group android:id="@+id/tools">
         <item
-            android:id="@+id/account"
-            android:icon="@drawable/ic_account"
-            android:title="Account" />
-        <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings"
             android:title="Settings" />
+        <item
+            android:id="@+id/information"
+            android:icon="@drawable/ic_info"
+            android:title="Information" />
     </group>
 
 </menu>

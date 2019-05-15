@@ -1,12 +1,18 @@
 package com.interstellarstudios.weathershare;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -15,6 +21,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +65,7 @@ import sibModel.SendSmtpEmailTo;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int ACCESS_LOCATION_PERMISSIONS_REQUEST = 1;
     private TextView mTemperatureText;
     private TextView mLocationText;
     private TextView mDescriptionText;
@@ -83,7 +93,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private TextView mTempForecast3;
     private TextView mTempForecast4;
     private TextView mTempForecast5;
-    private EditText mSearchField;
+    private AutoCompleteTextView mSearchField;
     private EditText mSharedUserEmailText;
     private String mSharedUserEmail;
     private String mCurrentUserId;
@@ -114,6 +124,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 .monitor();
         AppRate.showRateDialogIfMeetsConditions(this);
         //AppRate.with(this).showRateDialog(this);
+
+        if (ContextCompat.checkSelfPermission(Home.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            getPermissionToAccessLocation();
+        }
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         mSwitchOnOff = sharedPreferences.getBoolean("switchUnits", false);
@@ -177,12 +191,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             @Override
             public void onClick(View v) {
                 mSearchLocation = mSearchField.getText().toString();
-                findWeather(mSearchLocation);
-                findForecast(mSearchLocation);
+                findWeather(mSearchLocation, "", "");
+                findForecast(mSearchLocation, "", "");
             }
         });
 
         mSearchField = findViewById(R.id.searchField);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, SearchSuggestions.getSearchSuggestions(this));
+        mSearchField.setAdapter(adapter);
+
+        mSearchField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                String selectedLocation = mSearchField.getText().toString();
+                findWeather(selectedLocation, "", "");
+                findForecast(selectedLocation, "", "");
+            }
+        });
+
         mSearchField.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -190,8 +218,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             mSearchLocation = mSearchField.getText().toString();
-                            findWeather(mSearchLocation);
-                            findForecast(mSearchLocation);
+                            findWeather(mSearchLocation, "", "");
+                            findForecast(mSearchLocation, "", "");
                             return true;
                         default:
                             break;
@@ -233,6 +261,42 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         mProgressDialog.setMessage("Refreshing");
         mProgressDialog.show();
 
+        GPStracker gpsTracker = new GPStracker(getApplicationContext());
+        Location location = gpsTracker.getLocation();
+        if (location != null) {
+            double latitudeDouble = location.getLatitude();
+            double longitudeDouble = location.getLongitude();
+            String latitude = Double.toString(latitudeDouble);
+            String longitude = Double.toString(longitudeDouble);
+
+            findWeather("", latitude, longitude);
+            findForecast("", latitude, longitude);
+
+        } else {
+
+            DocumentReference homeLocationRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Home_Location");
+            homeLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+
+                            HomeLocationModel homeLocationModel = document.toObject(HomeLocationModel.class);
+                            mHomeLocation = homeLocationModel.getHomeLocation();
+
+                            MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
+                            navHomeLocation.setTitle(mHomeLocation);
+
+                            findWeather(mHomeLocation, "", "");
+                            findForecast(mHomeLocation, "", "");
+                        }
+                    }
+                }
+            });
+
+        }
+
         DocumentReference homeLocationRef = mFireBaseFireStore.collection("Users").document(mCurrentUserId).collection("Main").document("Home_Location");
         homeLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -246,9 +310,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                         MenuItem navHomeLocation = menu.findItem(R.id.nav_home_location);
                         navHomeLocation.setTitle(mHomeLocation);
-
-                        findWeather(mHomeLocation);
-                        findForecast(mHomeLocation);
                     }
                 }
             }
@@ -285,6 +346,27 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         });
     }
 
+    public void getPermissionToAccessLocation() {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Permission needed to access Location")
+                .setMessage("This permission is needed in order to get weather data for your current location. Manually enable in Settings > Apps & notifications > WeatherShare > Permissions.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                ACCESS_LOCATION_PERMISSIONS_REQUEST);
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create().show();
+
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_LOCATION_PERMISSIONS_REQUEST);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -300,23 +382,39 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.nav_home_location) {
-            findWeather(mHomeLocation);
-            findForecast(mHomeLocation);
+            findWeather(mHomeLocation, "", "");
+            findForecast(mHomeLocation, "", "");
+        } else if (id == R.id.nav_current_location) {
+
+            GPStracker gpsTracker = new GPStracker(getApplicationContext());
+            Location location = gpsTracker.getLocation();
+            if (location != null) {
+                double latitudeDouble = location.getLatitude();
+                double longitudeDouble = location.getLongitude();
+                String latitude = Double.toString(latitudeDouble);
+                String longitude = Double.toString(longitudeDouble);
+
+                findWeather("", latitude, longitude);
+                findForecast("", latitude, longitude);
+            } else {
+                Toast.makeText(Home.this, "Waiting for location. Please try again.", Toast.LENGTH_LONG).show();
+            }
+
         } else if (id == R.id.favourite_location1) {
-            findWeather(mFavouriteLocation1);
-            findForecast(mFavouriteLocation1);
+            findWeather(mFavouriteLocation1, "", "");
+            findForecast(mFavouriteLocation1, "", "");
         } else if (id == R.id.favourite_location2) {
-            findWeather(mFavouriteLocation2);
-            findForecast(mFavouriteLocation2);
+            findWeather(mFavouriteLocation2, "", "");
+            findForecast(mFavouriteLocation2, "", "");
         } else if (id == R.id.favourite_location3) {
-            findWeather(mFavouriteLocation3);
-            findForecast(mFavouriteLocation3);
+            findWeather(mFavouriteLocation3, "", "");
+            findForecast(mFavouriteLocation3, "", "");
         } else if (id == R.id.favourite_location4) {
-            findWeather(mFavouriteLocation4);
-            findForecast(mFavouriteLocation4);
+            findWeather(mFavouriteLocation4, "", "");
+            findForecast(mFavouriteLocation4, "", "");
         } else if (id == R.id.favourite_location5) {
-            findWeather(mFavouriteLocation5);
-            findForecast(mFavouriteLocation5);
+            findWeather(mFavouriteLocation5, "", "");
+            findForecast(mFavouriteLocation5, "", "");
         } else if (id == R.id.account) {
             Intent i = new Intent(Home.this, Account.class);
             startActivity(i);
@@ -332,30 +430,43 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return true;
     }
 
-    private void findWeather(String city) {
+    private void findWeather(String city, String latitude, String longitude) {
 
-        String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
-        String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
-        String unitsURL;
+        String mWeatherURL;
 
-        if (mSwitchOnOff) {
-            unitsURL = "&units=imperial";
+        if (city.equals("")) {
+            String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
+            String LAT_LON = "lat=" + latitude + "&lon=" + longitude;
+            String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
+            String unitsURL;
+
+            if (mSwitchOnOff) {
+                unitsURL = "&units=imperial";
+            } else {
+                unitsURL = "&units=metric";
+            }
+            mWeatherURL = BASE_URL + LAT_LON + API_KEY + unitsURL;
         } else {
-            unitsURL = "&units=metric";
+            String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
+            String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
+            String unitsURL;
+
+            if (mSwitchOnOff) {
+                unitsURL = "&units=imperial";
+            } else {
+                unitsURL = "&units=metric";
+            }
+            mWeatherURL = BASE_URL + city + API_KEY + unitsURL;
         }
 
-        String FINAL_URL = BASE_URL + city + API_KEY + unitsURL;
-
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, FINAL_URL, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, mWeatherURL, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     //coord object
                     JSONObject coordObject = response.getJSONObject("coord");
-                    String latitude = String.valueOf(coordObject.getString("lat"));
-                    String longitude = String.valueOf(coordObject.getInt("lon"));
-
-                    findIndexUV(latitude, longitude);
+                    String latitudeFinal = String.valueOf(coordObject.getString("lat"));
+                    String longitudeFinal = String.valueOf(coordObject.getInt("lon"));
 
                     //sys object
                     JSONObject sysObject = response.getJSONObject("sys");
@@ -382,6 +493,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     JSONObject windObject = response.getJSONObject("wind");
                     String windSpeed = String.valueOf(windObject.getDouble("speed"));
                     String windDegrees = String.valueOf(windObject.getInt("deg"));
+                    double windSpeedDouble = Double.parseDouble(windSpeed);
                     int windDegreesInt = Integer.parseInt(windDegrees);
 
                     //name object
@@ -437,7 +549,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         layout.setBackgroundResource(R.mipmap.sand);
                     } else if (weatherIdInt >= 762 && weatherIdInt <= 781) {
                         layout.setBackgroundResource(R.mipmap.mist);
-                    }else if (weatherIdInt == 800) {
+                    } else if (weatherIdInt == 800) {
                         layout.setBackgroundResource(R.mipmap.clear);
                     } else if (weatherIdInt >= 801 && weatherIdInt <= 803) {
                         layout.setBackgroundResource(R.mipmap.clouds);
@@ -449,8 +561,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     mLocationFinal = (city + ", " + country);
                     String humidityFinal = (humidity + "%");
                     String PressureFinal = (pressure + "hPa");
-                    String windSpeedFinalMetric = (windSpeed + "kph");
-                    String windSpeedFinalImperial = (windSpeed + "mph");
                     String temperatureFinalMetric = (temp + "°C");
                     String temperatureFinalImperial = (temp + "°F");
                     String temperatureMinFinalMetric = (tempMin + "°C");
@@ -467,16 +577,28 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     mSunsetText.setText(sunsetFinal);
 
                     if (mSwitchOnOff) {
-                        mWindSpeedText.setText(windSpeedFinalImperial);
+                        //converting wind speed
+                        double windSpeedConvert = windSpeedDouble * 1.15078;
+                        double windSpeedDoubleRounded = Math.round(windSpeedConvert * 10) / 10.0;
+                        String finalWindSpeedImperial = windSpeedDoubleRounded + "mph";
+
+                        mWindSpeedText.setText(finalWindSpeedImperial);
                         mMinTempText.setText(temperatureMinFinalImperial);
                         mMaxTempText.setText(temperatureMaxFinalImperial);
                         mTemperatureText.setText(temperatureFinalImperial);
                     } else {
-                        mWindSpeedText.setText(windSpeedFinalMetric);
+                        //converting wind speed
+                        double windSpeedConvert = windSpeedDouble * 3.6;
+                        double windSpeedDoubleRounded = Math.round(windSpeedConvert * 10) / 10.0;
+                        String finalWindSpeedMetric = windSpeedDoubleRounded + "kph";
+
+                        mWindSpeedText.setText(finalWindSpeedMetric);
                         mMinTempText.setText(temperatureMinFinalMetric);
                         mMaxTempText.setText(temperatureMaxFinalMetric);
                         mTemperatureText.setText(temperatureFinalMetric);
                     }
+
+                    findIndexUV(latitudeFinal, longitudeFinal);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -505,7 +627,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 try {
                     double indexUV = response.getDouble("value");
 
-                    if (indexUV >= 0 && indexUV <= 2){
+                    if (indexUV >= 0 && indexUV <= 2) {
                         mIndexUV.setText("UV Index: Low");
                     } else if (indexUV >= 3 && indexUV <= 5) {
                         mIndexUV.setText("UV Index: Moderate");
@@ -531,21 +653,36 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         queue.add(jor);
     }
 
-    private void findForecast(String city) {
+    private void findForecast(String city, String latitude, String longitude) {
 
-        String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?q=";
-        String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
-        String unitsURL;
+        String mForecastURL;
 
-        if (mSwitchOnOff) {
-            unitsURL = "&units=imperial";
+        if (city.equals("")) {
+            String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?";
+            String LAT_LON = "lat=" + latitude + "&lon=" + longitude;
+            String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
+            String unitsURL;
+
+            if (mSwitchOnOff) {
+                unitsURL = "&units=imperial";
+            } else {
+                unitsURL = "&units=metric";
+            }
+            mForecastURL = BASE_URL + LAT_LON + API_KEY + unitsURL;
         } else {
-            unitsURL = "&units=metric";
+            String BASE_URL = "https://api.openweathermap.org/data/2.5/forecast?q=";
+            String API_KEY = "&appid=157187733bb90119ccc38f4d8d1f6da7";
+            String unitsURL;
+
+            if (mSwitchOnOff) {
+                unitsURL = "&units=imperial";
+            } else {
+                unitsURL = "&units=metric";
+            }
+            mForecastURL = BASE_URL + city + API_KEY + unitsURL;
         }
 
-        String FINAL_URL = BASE_URL + city + API_KEY + unitsURL;
-
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, FINAL_URL, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, mForecastURL, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -902,12 +1039,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String descrDay2 = mDescription2Text.getText().toString().toUpperCase();
                     String descrDay3 = mDescription3Text.getText().toString().toUpperCase();
                     String descrDay4 = mDescription4Text.getText().toString().toUpperCase();
-                    String descrDay5= mDescription5Text.getText().toString().toUpperCase();
+                    String descrDay5 = mDescription5Text.getText().toString().toUpperCase();
                     String tempDay1 = mTempForecast1.getText().toString();
                     String tempDay2 = mTempForecast2.getText().toString();
                     String tempDay3 = mTempForecast3.getText().toString();
                     String tempDay4 = mTempForecast4.getText().toString();
-                    String tempDay5= mTempForecast5.getText().toString();
+                    String tempDay5 = mTempForecast5.getText().toString();
 
                     ApiClient defaultClient = Configuration.getDefaultApiClient();
 

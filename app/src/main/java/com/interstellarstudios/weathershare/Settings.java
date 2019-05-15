@@ -7,8 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,12 +21,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Settings extends AppCompatActivity {
 
-    private EditText mHomeLocationText;
-    private EditText mFavouriteLocation1;
-    private EditText mFavouriteLocation2;
-    private EditText mFavouriteLocation3;
-    private EditText mFavouriteLocation4;
-    private EditText mFavouriteLocation5;
+    private AutoCompleteTextView mHomeLocationText;
+    private AutoCompleteTextView mFavouriteLocation1;
+    private AutoCompleteTextView mFavouriteLocation2;
+    private AutoCompleteTextView mFavouriteLocation3;
+    private AutoCompleteTextView mFavouriteLocation4;
+    private AutoCompleteTextView mFavouriteLocation5;
     private FirebaseFirestore mFireBaseFireStore;
     private String mCurrentUserId;
     private ToggleButton buttonSwitchUnits;
@@ -44,13 +45,26 @@ public class Settings extends AppCompatActivity {
             mCurrentUserId = mFireBaseAuth.getCurrentUser().getUid();
         }
 
-        mHomeLocationText = findViewById(R.id.home_location);
-        mFavouriteLocation1 = findViewById(R.id.favourite_location_1);
-        mFavouriteLocation2 = findViewById(R.id.favourite_location_2);
-        mFavouriteLocation3 = findViewById(R.id.favourite_location_3);
-        mFavouriteLocation4 = findViewById(R.id.favourite_location_4);
-        mFavouriteLocation5 = findViewById(R.id.favourite_location_5);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, SearchSuggestions.getSearchSuggestions(this));
 
+        mHomeLocationText = findViewById(R.id.home_location);
+        mHomeLocationText.setAdapter(adapter);
+
+        mFavouriteLocation1 = findViewById(R.id.favourite_location_1);
+        mFavouriteLocation1.setAdapter(adapter);
+
+        mFavouriteLocation2 = findViewById(R.id.favourite_location_2);
+        mFavouriteLocation2.setAdapter(adapter);
+
+        mFavouriteLocation3 = findViewById(R.id.favourite_location_3);
+        mFavouriteLocation3.setAdapter(adapter);
+
+        mFavouriteLocation4 = findViewById(R.id.favourite_location_4);
+        mFavouriteLocation4.setAdapter(adapter);
+
+        mFavouriteLocation5 = findViewById(R.id.favourite_location_5);
+        mFavouriteLocation5.setAdapter(adapter);
 
         ImageView saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {

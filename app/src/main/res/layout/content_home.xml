@@ -34,13 +34,14 @@
                 app:layout_constraintTop_toTopOf="@+id/searchField"
                 app:srcCompat="@drawable/ic_menu" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/searchField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:hint="Search Any Location"
                 android:inputType="text"

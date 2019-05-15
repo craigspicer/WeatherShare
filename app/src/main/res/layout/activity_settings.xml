@@ -26,21 +26,19 @@
 
             <TextView
                 android:id="@+id/homeLocationDescription"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:text="Set your home location"
                 android:textColor="@color/colorLight"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/home_location"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/homeLocationSetting" />
 
             <TextView
                 android:id="@+id/favouriteLocationsDescription"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
@@ -52,37 +50,33 @@
 
             <TextView
                 android:id="@+id/fingerprintTextView"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginEnd="16dp"
                 android:text="Metric/Imperial"
                 android:textColor="@color/colorLight"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/unitsSelector"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/settingsHeading" />
 
             <TextView
                 android:id="@+id/homeLocationSetting"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginEnd="16dp"
                 android:text="Home Location"
                 android:textColor="@color/colorLight"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/home_location"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fingerprintDescription" />
 
             <TextView
                 android:id="@+id/favouriteLocationsSetting"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
@@ -95,15 +89,13 @@
 
             <TextView
                 android:id="@+id/fingerprintDescription"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:text="Select metric or imperial units"
                 android:textColor="@color/colorLight"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/unitsSelector"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fingerprintTextView" />
 
@@ -129,7 +121,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/settingsHeading"
                 app:layout_constraintEnd_toStartOf="@+id/settingsHeading"
                 app:layout_constraintTop_toTopOf="@+id/settingsHeading"
-                app:srcCompat="@drawable/ic_settings_white" />
+                app:srcCompat="@drawable/ic_settings" />
 
             <ToggleButton
                 android:id="@+id/unitsSelector"
@@ -147,95 +139,103 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/fingerprintTextView" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/home_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:hint="eg. New York, US"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintBottom_toBottomOf="@+id/homeLocationDescription"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/homeLocationDescription"
                 app:layout_constraintTop_toTopOf="@+id/homeLocationSetting" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/favourite_location_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favouriteLocationsDescription" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/favourite_location_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favourite_location_1" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/favourite_location_3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favourite_location_2" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/favourite_location_4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favourite_location_3" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/favourite_location_5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:padding="16dp"
                 android:textColor="@color/colorLight"
                 android:textColorHint="@color/colorLight"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:backgroundTint="@color/colorLight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favourite_location_4" />

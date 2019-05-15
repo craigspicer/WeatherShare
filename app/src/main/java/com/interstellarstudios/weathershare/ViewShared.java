@@ -177,6 +177,7 @@ public class ViewShared extends AppCompatActivity {
                     JSONObject windObject = response.getJSONObject("wind");
                     String windSpeed = String.valueOf(windObject.getDouble("speed"));
                     String windDegrees = String.valueOf(windObject.getInt("deg"));
+                    double windSpeedDouble = Double.parseDouble(windSpeed);
                     int windDegreesInt = Integer.parseInt(windDegrees);
 
                     //name object
@@ -243,8 +244,6 @@ public class ViewShared extends AppCompatActivity {
                     //final strings
                     String humidityFinal = (humidity + "%");
                     String PressureFinal = (pressure + "hPa");
-                    String windSpeedFinalMetric = (windSpeed + "kph");
-                    String windSpeedFinalImperial = (windSpeed + "mph");
                     String temperatureFinalMetric = (temp + "°C");
                     String temperatureFinalImperial = (temp + "°F");
                     String temperatureMinFinalMetric = (tempMin + "°C");
@@ -261,12 +260,22 @@ public class ViewShared extends AppCompatActivity {
                     mSunsetText.setText(sunsetFinal);
 
                     if (mSwitchOnOff) {
-                        mWindSpeedText.setText(windSpeedFinalImperial);
+                        //converting wind speed
+                        double windSpeedConvert = windSpeedDouble * 1.15078;
+                        double windSpeedDoubleRounded = Math.round(windSpeedConvert * 10) / 10.0;
+                        String finalWindSpeedImperial = windSpeedDoubleRounded + "mph";
+
+                        mWindSpeedText.setText(finalWindSpeedImperial);
                         mMinTempText.setText(temperatureMinFinalImperial);
                         mMaxTempText.setText(temperatureMaxFinalImperial);
                         mTemperatureText.setText(temperatureFinalImperial);
                     } else {
-                        mWindSpeedText.setText(windSpeedFinalMetric);
+                        //converting wind speed
+                        double windSpeedConvert = windSpeedDouble * 3.6;
+                        double windSpeedDoubleRounded = Math.round(windSpeedConvert * 10) / 10.0;
+                        String finalWindSpeedMetric = windSpeedDoubleRounded + "kph";
+
+                        mWindSpeedText.setText(finalWindSpeedMetric);
                         mMinTempText.setText(temperatureMinFinalMetric);
                         mMaxTempText.setText(temperatureMaxFinalMetric);
                         mTemperatureText.setText(temperatureFinalMetric);

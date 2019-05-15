@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -12,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LocationSetup extends AppCompatActivity {
 
-    private EditText mHomeLocation;
+    private AutoCompleteTextView mHomeLocation;
     private FirebaseAuth mFireBaseAuth;
     private FirebaseFirestore mFireBaseFireStore;
     private String mCurrentUserId;
@@ -26,6 +27,9 @@ public class LocationSetup extends AppCompatActivity {
         mFireBaseFireStore = FirebaseFirestore.getInstance();
 
         mHomeLocation = findViewById(R.id.home_location);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, SearchSuggestions.getSearchSuggestions(this));
+        mHomeLocation.setAdapter(adapter);
 
         ImageView submitButton = findViewById(R.id.submit);
         submitButton.setOnClickListener(new View.OnClickListener() {

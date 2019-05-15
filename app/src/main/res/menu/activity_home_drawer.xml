@@ -9,6 +9,10 @@
             android:id="@+id/nav_home_location"
             android:icon="@drawable/ic_home"
             android:title="" />
+        <item
+            android:id="@+id/nav_current_location"
+            android:icon="@drawable/ic_location"
+            android:title="Current Location" />
     </group>
 
     <group android:id="@+id/menu_favourite_locations">

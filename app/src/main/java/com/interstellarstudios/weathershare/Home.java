@@ -415,6 +415,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String latitudeFinal = String.valueOf(coordObject.getString("lat"));
                     String longitudeFinal = String.valueOf(coordObject.getInt("lon"));
 
+                    findIndexUV(latitudeFinal, longitudeFinal);
+
                     //sys object
                     JSONObject sysObject = response.getJSONObject("sys");
                     String country = String.valueOf(sysObject.getString("country"));
@@ -439,9 +441,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     //wind object
                     JSONObject windObject = response.getJSONObject("wind");
                     String windSpeed = String.valueOf(windObject.getDouble("speed"));
-                    String windDegrees = String.valueOf(windObject.getInt("deg"));
                     double windSpeedDouble = Double.parseDouble(windSpeed);
-                    int windDegreesInt = Integer.parseInt(windDegrees);
 
                     //name object
                     String city = response.getString("name");
@@ -456,25 +456,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     long sunsetUnix = sunsetInt;
                     Date date3 = new java.util.Date(sunsetUnix * 1000L);
                     String sunsetFinal = (sdf.format(date3));
-
-                    //wind direction
-                    if (windDegreesInt >= 23 && windDegreesInt <= 68) {
-                        mWindDegreesText.setText("NE");
-                    } else if (windDegreesInt >= 69 && windDegreesInt <= 114) {
-                        mWindDegreesText.setText("E");
-                    } else if (windDegreesInt >= 114 && windDegreesInt <= 159) {
-                        mWindDegreesText.setText("SE");
-                    } else if (windDegreesInt >= 159 && windDegreesInt <= 204) {
-                        mWindDegreesText.setText("S");
-                    } else if (windDegreesInt >= 204 && windDegreesInt <= 249) {
-                        mWindDegreesText.setText("SW");
-                    } else if (windDegreesInt >= 249 && windDegreesInt <= 294) {
-                        mWindDegreesText.setText("W");
-                    } else if (windDegreesInt >= 294 && windDegreesInt <= 339) {
-                        mWindDegreesText.setText("NW");
-                    } else {
-                        mWindDegreesText.setText("N");
-                    }
 
                     //change background image
                     ConstraintLayout layout = findViewById(R.id.container2);
@@ -545,7 +526,27 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         mTemperatureText.setText(temperatureFinalMetric);
                     }
 
-                    findIndexUV(latitudeFinal, longitudeFinal);
+                    String windDegrees = String.valueOf(windObject.getInt("deg"));
+                    int windDegreesInt = Integer.parseInt(windDegrees);
+
+                    //wind direction
+                    if (windDegreesInt >= 23 && windDegreesInt <= 68) {
+                        mWindDegreesText.setText("NE");
+                    } else if (windDegreesInt >= 69 && windDegreesInt <= 114) {
+                        mWindDegreesText.setText("E");
+                    } else if (windDegreesInt >= 114 && windDegreesInt <= 159) {
+                        mWindDegreesText.setText("SE");
+                    } else if (windDegreesInt >= 159 && windDegreesInt <= 204) {
+                        mWindDegreesText.setText("S");
+                    } else if (windDegreesInt >= 204 && windDegreesInt <= 249) {
+                        mWindDegreesText.setText("SW");
+                    } else if (windDegreesInt >= 249 && windDegreesInt <= 294) {
+                        mWindDegreesText.setText("W");
+                    } else if (windDegreesInt >= 294 && windDegreesInt <= 339) {
+                        mWindDegreesText.setText("NW");
+                    } else {
+                        mWindDegreesText.setText("N");
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:id="@+id/menu_home_location">
+
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home_location"
             android:icon="@drawable/ic_home"
@@ -15,38 +16,42 @@
             android:title="Current Location" />
     </group>
 
-    <group android:id="@+id/menu_favourite_locations">
-        <item
-            android:id="@+id/favourite_location1"
-            android:icon="@drawable/ic_favourite"
-            android:title="" />
-        <item
-            android:id="@+id/favourite_location2"
-            android:icon="@drawable/ic_favourite"
-            android:title="" />
-        <item
-            android:id="@+id/favourite_location3"
-            android:icon="@drawable/ic_favourite"
-            android:title="" />
-        <item
-            android:id="@+id/favourite_location4"
-            android:icon="@drawable/ic_favourite"
-            android:title="" />
-        <item
-            android:id="@+id/favourite_location5"
-            android:icon="@drawable/ic_favourite"
-            android:title="" />
-    </group>
+    <item android:title="Favourites">
+        <menu>
+            <item
+                android:id="@+id/favourite_location1"
+                android:icon="@drawable/ic_favourite"
+                android:title="" />
+            <item
+                android:id="@+id/favourite_location2"
+                android:icon="@drawable/ic_favourite"
+                android:title="" />
+            <item
+                android:id="@+id/favourite_location3"
+                android:icon="@drawable/ic_favourite"
+                android:title="" />
+            <item
+                android:id="@+id/favourite_location4"
+                android:icon="@drawable/ic_favourite"
+                android:title="" />
+            <item
+                android:id="@+id/favourite_location5"
+                android:icon="@drawable/ic_favourite"
+                android:title="" />
+        </menu>
+    </item>
 
-    <group android:id="@+id/tools">
-        <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings" />
-        <item
-            android:id="@+id/information"
-            android:icon="@drawable/ic_info"
-            android:title="Information" />
-    </group>
+    <item android:title="Tools">
+        <menu>
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/ic_settings"
+                android:title="Settings" />
+            <item
+                android:id="@+id/information"
+                android:icon="@drawable/ic_info"
+                android:title="Information" />
+        </menu>
+    </item>
 
 </menu>

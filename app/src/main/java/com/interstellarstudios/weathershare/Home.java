@@ -1,7 +1,6 @@
 package com.interstellarstudios.weathershare;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -37,16 +35,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import hotchemi.android.rate.AppRate;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
@@ -289,7 +284,18 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isDestroyed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isDestroyed();
+    }
+
     public void getPermissionToAccessLocation() {
 
         new AlertDialog.Builder(this)
@@ -1533,7 +1539,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e366516c5d85.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5ceac55cf3b5bafcab347d3c.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1547,7 +1553,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
                             "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
-                            "                                                            <div><div>All of your locations automatically synced to the Cloud. Stored securely with Google Firebase.</div>\n" +
+                            "                                                            <div><div>Stunning weather reports for any location in the World.</div>\n" +
                             "</div>\n" +
                             "                                                        </td>\n" +
                             "                                                    </tr>\n" +
@@ -1564,7 +1570,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4392438696e3662461432d.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5ceac55c8efefceee25e7237.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1578,7 +1584,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                        <td height=\"10\" class=\"col_td_gap\" style=\"font-size:1px; line-height:0px;\">&nbsp;</td>\n" +
                             "                                                    </tr><tr>\n" +
                             "                                                        <td style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;\">\n" +
-                            "                                                            <div><div>All of your reports on all of your devices. Share reports instantly via email and device-to-device.</div>\n" +
+                            "                                                            <div><div>Share weather and forecast reports with the click of a button.</div>\n" +
                             "</div>\n" +
                             "                                                        </td>\n" +
                             "                                                    </tr>\n" +

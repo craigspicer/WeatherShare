@@ -80,6 +80,7 @@ public class Settings extends AppCompatActivity {
     }
 
     public void savePreferences() {
+
         SharedPreferences myPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = myPrefs.edit();
 
@@ -127,5 +128,17 @@ public class Settings extends AppCompatActivity {
         super.onBackPressed();
         finish();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isDestroyed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isDestroyed();
     }
 }

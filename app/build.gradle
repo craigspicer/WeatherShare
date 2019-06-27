@@ -8,7 +8,7 @@ android {
         applicationId "com.interstellarstudios.weathershare"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 31
+        versionCode 32
         versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -34,9 +34,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.sendinblue:sib-api-v3-sdk:3.0.1'
     implementation 'com.github.hotchemi:android-rate:1.0.1'
     implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
+
+    implementation ('com.github.danysantiago:sendgrid-android:1'){
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

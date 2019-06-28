@@ -959,7 +959,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     String tempDay4 = mTempForecast4.getText().toString();
                     String tempDay5 = mTempForecast5.getText().toString();
 
-                    SendGrid sendgrid = new SendGrid(null, "API KEY HERE");
+                    SendGrid sendgrid = new SendGrid("API KEY GOES HERE");
 
                     SendGrid.Email email = new SendGrid.Email();
 
@@ -1235,6 +1235,24 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "\n" +
                             "        <td align=\"center\" valign=\"top\">\n" +
                             "\n" +
+                            "            <table class=\"rnb-del-min-width\" width=\"100%\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"min-width:590px;\" name=\"Layout_5139\" id=\"Layout_5139\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                    <td class=\"rnb-del-min-width\" valign=\"top\" align=\"center\" style=\"min-width:590px;\">\n" +
+                            "                        <table width=\"100%\" cellpadding=\"0\" border=\"0\" height=\"38\" cellspacing=\"0\">\n" +
+                            "                            <tbody><tr>\n" +
+                            "                                <td valign=\"top\" height=\"38\">\n" +
+                            "                                    <img width=\"20\" height=\"38\" style=\"display:block; max-height:38px; max-width:20px;\" alt=\"\" src=\"http://img.mailinblue.com/new_images/rnb/rnb_space.gif\">\n" +
+                            "                                </td>\n" +
+                            "                            </tr>\n" +
+                            "                        </tbody></table>\n" +
+                            "                    </td>\n" +
+                            "                </tr>\n" +
+                            "            </tbody></table>\n" +
+                            "            </td>\n" +
+                            "    </tr><tr>\n" +
+                            "\n" +
+                            "        <td align=\"center\" valign=\"top\">\n" +
+                            "\n" +
                             "            <div style=\"background-color: rgb(255, 255, 255);\">\n" +
                             "                \n" +
                             "                <!--[if mso]>\n" +
@@ -1260,7 +1278,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 1px;\">\n" +
-                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Femail_header_weathershare.jpg?alt=media&token=acef35ee-6b77-4fac-a94e-f1005749114f\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd4237f27351d65c77e45f2.jpg\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                </tbody></table>\n" +
                             "                                                </td>\n" +
@@ -1419,7 +1437,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://play.google.com/store/apps/details?id=com.interstellarstudios.weathershare\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fgoogle_play_small.jpg?alt=media&token=168ff56e-c79c-4402-960a-6db3e0045a0f\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c27674ccf29bcec2a435996.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +
@@ -1495,7 +1513,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fandroid_logo_comp.jpg?alt=media&token=0bafd8cc-a205-4853-b820-178bff24f903\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5ceac55cf3b5bafcab347d3c.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1526,7 +1544,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                        <table style=\"display: inline-block;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n" +
                             "                                                                            <tbody><tr>\n" +
                             "                                                                                <td>\n" +
-                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fjava_logo_comp.jpg?alt=media&token=f147dc6c-9ae2-4f38-99b7-9fd0e8522952\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                                    <div style=\"border-top:1px Solid #9c9c9c;border-right:1px Solid #9c9c9c;border-bottom:1px Solid #9c9c9c;border-left:1px Solid #9c9c9c;display:inline-block;\"><div><img border=\"0\" width=\"263\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-2-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5ceac55c8efefceee25e7237.jpg\" style=\"vertical-align: top; max-width: 300px; float: left;\"></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                                    </div>\n" +
                             "                                                                            </td>\n" +
                             "                                                                            </tr>\n" +
@@ -1597,7 +1615,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "\n" +
                             "                                                    <tbody><tr>\n" +
                             "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
-                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://weathershare.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fweb_computer.jpg?alt=media&token=3755e0b4-1407-4366-9c27-20f322016978\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                            "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://weathershare.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5c4b80730d48fbeb3c5c753d.png\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                             "                                                    </tr>\n" +
                             "                                                    </tbody></table>\n" +
                             "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -1673,7 +1691,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             "                                                                                <td>\n" +
                             "                                                                        <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\">\n" +
                             "                                                                            <div><a target=\"_blank\" href=\"https://github.com/craigspicer\">\n" +
-                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2FGitHub_logo.jpg?alt=media&token=84fa144d-5fa5-4aa1-9769-25036b061818\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
+                            "                                                                            <img ng-if=\"col.img.source != 'url'\" width=\"200\" border=\"0\" hspace=\"0\" vspace=\"0\" alt=\"\" class=\"rnb-col-1-img\" src=\"http://img.mailinblue.com/2190383/images/rnb/original/5cd3fccc27351d028e2b7a1b.png\" style=\"vertical-align: top; max-width: 200px; float: left;\"></a></div><div style=\"clear:both;\"></div>\n" +
                             "                                                                            </div></td>\n" +
                             "                                                                            </tr>\n" +
                             "                                                                        </tbody></table>\n" +

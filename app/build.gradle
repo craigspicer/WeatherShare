@@ -8,7 +8,7 @@ android {
         applicationId "com.interstellarstudios.weathershare"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 32
+        versionCode 35
         versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

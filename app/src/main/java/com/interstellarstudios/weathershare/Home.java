@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -22,7 +23,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,7 +34,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,7 +93,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private String mFavouriteLocation4;
     private String mFavouriteLocation5;
     private Boolean mSwitchOnOff;
-    private FirebaseAnalytics mFireBaseAnalytics;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -124,9 +122,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         mFavouriteLocation3 = sharedPreferences.getString("favouriteLocation3", "");
         mFavouriteLocation4 = sharedPreferences.getString("favouriteLocation4", "");
         mFavouriteLocation5 = sharedPreferences.getString("favouriteLocation5", "");
-
-        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-        final Bundle analyticsBundle = new Bundle();
 
         mSharedUserEmailText = findViewById(R.id.shared_user_email);
         mTemperatureText = findViewById(R.id.temperatureText);
@@ -179,23 +174,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 mSearchLocation = mSearchField.getText().toString();
                 findWeather(mSearchLocation, "", "");
                 findForecast(mSearchLocation, "", "");
-                mFireBaseAnalytics.logEvent("search", analyticsBundle);
             }
         });
 
         mSearchField = findViewById(R.id.searchField);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, SearchSuggestions.getSearchSuggestions(this));
-        mSearchField.setAdapter(adapter);
-
         mSearchField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedLocation = mSearchField.getText().toString();
                 findWeather(selectedLocation, "", "");
                 findForecast(selectedLocation, "", "");
-                mFireBaseAnalytics.logEvent("search", analyticsBundle);
             }
         });
 
@@ -208,7 +196,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             mSearchLocation = mSearchField.getText().toString();
                             findWeather(mSearchLocation, "", "");
                             findForecast(mSearchLocation, "", "");
-                            mFireBaseAnalytics.logEvent("search", analyticsBundle);
                             return true;
                         default:
                             break;
@@ -224,7 +211,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             public void onClick(View v) {
                 sendMail();
                 Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
-                mFireBaseAnalytics.logEvent("weather_report_emailed", analyticsBundle);
             }
         });
 
@@ -237,7 +223,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         case KeyEvent.KEYCODE_ENTER:
                             sendMail();
                             Toast.makeText(Home.this, "Weather report emailed to: " + mSharedUserEmail, Toast.LENGTH_LONG).show();
-                            mFireBaseAnalytics.logEvent("weather_report_emailed", analyticsBundle);
                             return true;
                         default:
                             break;
@@ -303,8 +288,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                ACCESS_LOCATION_PERMISSIONS_REQUEST);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    ACCESS_LOCATION_PERMISSIONS_REQUEST);
+                        }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -312,8 +299,22 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 dialog.dismiss();
             }
         }).create().show();
+    }
 
-        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_LOCATION_PERMISSIONS_REQUEST);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+
+        if (requestCode == ACCESS_LOCATION_PERMISSIONS_REQUEST) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(Home.this, "Access location permission granted", Toast.LENGTH_LONG).show();
+                recreate();
+            } else {
+                Toast.makeText(Home.this, "Access location permission denied", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
@@ -335,7 +336,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         if (id == R.id.nav_home_location) {
             findWeather(mHomeLocation, "", "");
             findForecast(mHomeLocation, "", "");
-            mFireBaseAnalytics.logEvent("menu_home_clicked", analyticsBundle);
 
         } else if (id == R.id.nav_current_location) {
 
@@ -349,7 +349,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                 findWeather("", latitude, longitude);
                 findForecast("", latitude, longitude);
-                mFireBaseAnalytics.logEvent("menu_current_location_clicked", analyticsBundle);
             } else {
                 Toast.makeText(Home.this, "Waiting for location. Please try again.", Toast.LENGTH_LONG).show();
             }
@@ -357,33 +356,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.favourite_location1) {
             findWeather(mFavouriteLocation1, "", "");
             findForecast(mFavouriteLocation1, "", "");
-            mFireBaseAnalytics.logEvent("menu_favourite1_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location2) {
             findWeather(mFavouriteLocation2, "", "");
             findForecast(mFavouriteLocation2, "", "");
-            mFireBaseAnalytics.logEvent("menu_favourite2_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location3) {
             findWeather(mFavouriteLocation3, "", "");
             findForecast(mFavouriteLocation3, "", "");
-            mFireBaseAnalytics.logEvent("menu_favourite3_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location4) {
             findWeather(mFavouriteLocation4, "", "");
             findForecast(mFavouriteLocation4, "", "");
-            mFireBaseAnalytics.logEvent("menu_favourite4_clicked", analyticsBundle);
         } else if (id == R.id.favourite_location5) {
             findWeather(mFavouriteLocation5, "", "");
             findForecast(mFavouriteLocation5, "", "");
-            mFireBaseAnalytics.logEvent("menu_favourite5_clicked", analyticsBundle);
         } else if (id == R.id.settings) {
             Intent j = new Intent(Home.this, Settings.class);
             startActivity(j);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            mFireBaseAnalytics.logEvent("settings_clicked", analyticsBundle);
         } else if (id == R.id.information) {
             Intent i = new Intent(Home.this, Account.class);
             startActivity(i);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            mFireBaseAnalytics.logEvent("information_clicked", analyticsBundle);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -965,7 +957,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         ApiClient defaultClient = Configuration.getDefaultApiClient();
 
         ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey("API KEY GOES HERE");
+        apiKey.setApiKey("YOUR API KEY HERE");
 
         final SmtpApi apiInstance = new SmtpApi();
 

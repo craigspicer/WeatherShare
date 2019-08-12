@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -42,21 +41,12 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, SearchSuggestions.getSearchSuggestions(this));
-
         mHomeLocationTextView = findViewById(R.id.home_location);
-        mHomeLocationTextView.setAdapter(adapter);
         mFavouriteLocation1TextView = findViewById(R.id.favourite_location_1);
-        mFavouriteLocation1TextView.setAdapter(adapter);
         mFavouriteLocation2TextView = findViewById(R.id.favourite_location_2);
-        mFavouriteLocation2TextView.setAdapter(adapter);
         mFavouriteLocation3TextView = findViewById(R.id.favourite_location_3);
-        mFavouriteLocation3TextView.setAdapter(adapter);
         mFavouriteLocation4TextView = findViewById(R.id.favourite_location_4);
-        mFavouriteLocation4TextView.setAdapter(adapter);
         mFavouriteLocation5TextView = findViewById(R.id.favourite_location_5);
-        mFavouriteLocation5TextView.setAdapter(adapter);
         buttonSwitchUnits = findViewById(R.id.unitsSelector);
 
         mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);

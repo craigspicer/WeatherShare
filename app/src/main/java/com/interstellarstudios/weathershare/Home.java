@@ -9,18 +9,23 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.AlertDialog;
+
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -28,19 +33,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import hotchemi.android.rate.AppRate;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
@@ -371,10 +380,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.settings) {
             Intent j = new Intent(Home.this, Settings.class);
             startActivity(j);
-            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-        } else if (id == R.id.information) {
-            Intent i = new Intent(Home.this, Account.class);
-            startActivity(i);
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         }
 
@@ -965,7 +970,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         emailArrayList.add(new SendSmtpEmailTo().email(mSharedUserEmail));
 
         final SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
-        sendSmtpEmail.sender(new SendSmtpEmailSender().email("weathershare@interstellarstudios.co.uk").name("WeatherShare"));
+        sendSmtpEmail.sender(new SendSmtpEmailSender().email("weathershare@nullparams.com").name("WeatherShare"));
         sendSmtpEmail.to(emailArrayList);
         sendSmtpEmail.subject("You've received a Shared Weather Report");
         sendSmtpEmail.htmlContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><meta name=\"x-apple-disable-message-reformatting\" /><meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" /><meta name=\"format-detection\" content=\"telephone=no\" /><title></title><style type=\"text/css\">\n" +
@@ -1261,7 +1266,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 "                                                <table cellpadding=\"0\" border=\"0\" align=\"center\" cellspacing=\"0\" class=\"logo-img-center\"> \n" +
                 "                                                    <tbody><tr>\n" +
                 "                                                        <td valign=\"middle\" align=\"center\" style=\"line-height: 1px;\">\n" +
-                "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Note-ify\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Femail_header_weathershare.jpg?alt=media&token=acef35ee-6b77-4fac-a94e-f1005749114f\"></div></div></td>\n" +
+                "                                                            <div style=\"border-top:0px None #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block; \" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><div><img width=\"550\" vspace=\"0\" hspace=\"0\" border=\"0\" alt=\"Null Params\" style=\"float: left;max-width:550px;display:block;\" class=\"rnb-logo-img\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Femail_header_weathershare.jpg?alt=media&token=acef35ee-6b77-4fac-a94e-f1005749114f\"></div></div></td>\n" +
                 "                                                    </tr>\n" +
                 "                                                </tbody></table>\n" +
                 "                                                </td>\n" +
@@ -1598,7 +1603,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 "\n" +
                 "                                                    <tbody><tr>\n" +
                 "                                                        <td width=\"100%\" style=\"line-height: 1px;\" class=\"img-block-center\" valign=\"top\" align=\"left\">\n" +
-                "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://weathershare.interstellarstudios.co.uk\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fweb_computer.jpg?alt=media&token=3755e0b4-1407-4366-9c27-20f322016978\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
+                "                                                            <div style=\"border-top:0px none #000;border-right:0px None #000;border-bottom:0px None #000;border-left:0px None #000;display:inline-block;\"><div><a target=\"_blank\" href=\"https://nullparams.com\"><img ng-if=\"col.img.source != 'url'\" alt=\"\" border=\"0\" hspace=\"0\" vspace=\"0\" width=\"180\" style=\"vertical-align:top; float: left; max-width:270px !important; \" class=\"rnb-col-2-img-side-xl\" src=\"https://firebasestorage.googleapis.com/v0/b/weathershare-b1a5d.appspot.com/o/Email%20Images%2FEmail%20Images%2Fweb_computer.jpg?alt=media&token=3755e0b4-1407-4366-9c27-20f322016978\"></a></div><div style=\"clear:both;\"></div></div></td>\n" +
                 "                                                    </tr>\n" +
                 "                                                    </tbody></table>\n" +
                 "                                                </td><td class=\"rnb-force-col\" valign=\"top\">\n" +
@@ -1611,7 +1616,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 "                                                    </tr><tr>\n" +
                 "                                                        <td height=\"10\" style=\"font-size:1px; line-height:0px; mso-hide: all;\">&nbsp;</td>\n" +
                 "                                                    </tr><tr>\n" +
-                "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://weathershare.interstellarstudios.co.uk\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://weathershare.interstellarstudios.co.uk</a><a href=\"https://noteify.interstellarstudios.co.uk/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">\u200B</a></div>\n" +
+                "                                                        <td class=\"rnb-mbl-float-none\" style=\"font-size:14px; font-family:Arial,Helvetica,sans-serif;color:#3c4858;float:right;width:350px; line-height: 21px;\"><div>Need some information? Check out our website:&nbsp;<a href=\"https://nullparams.com\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">https://nullparams.com</a><a href=\"https://nullparams.com/\" style=\"text-decoration: underline; color: rgb(52, 153, 219);\">\u200B</a></div>\n" +
                 "</td>\n" +
                 "                                                    </tr>\n" +
                 "                                                    </tbody></table>\n" +

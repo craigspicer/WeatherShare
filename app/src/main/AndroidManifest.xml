@@ -32,19 +32,8 @@
             android:label="@string/title_activity_home"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".Account"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".Settings"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".PrivacyPolicy"
-            android:label="Privacy Policy"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".TermsOfService"
-            android:label="Terms of Service"
-            android:theme="@style/AppTheme" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -47,10 +47,6 @@
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"
                 android:title="Settings" />
-            <item
-                android:id="@+id/information"
-                android:icon="@drawable/ic_info"
-                android:title="Information" />
         </menu>
     </item>
 
